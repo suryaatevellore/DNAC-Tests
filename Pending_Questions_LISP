@@ -1,0 +1,8 @@
+
+/*----------  Subsection comment block  ----------*/
+
+map-server nmr non-site-ttl 1440
+ ipv4 locator reachability exclude-default
+
+ /*----------  Subsection comment block  ----------*/
+ 
