@@ -1,0 +1,1706 @@
+﻿﻿POD3-C9500-48X-A#ter len 0 
+POD3-C9500-48X-A#sh run
+Building configuration...
+
+Current configuration : 10989 bytes
+!
+! Last configuration change at 06:10:12 UTC Sat Mar 31 2018 by admin
+!
+version 16.6
+no service pad
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no platform punt-keepalive disable-kernel-core
+!
+hostname POD3-C9500-48X-A
+!
+!
+vrf definition CORP_VRF
+ rd 1:0
+ !
+ address-family ipv4
+  route-target export 1:0
+  route-target import 1:0
+ exit-address-family
+!
+vrf definition DEFAULT_VN
+ rd 1:4098
+ !
+ address-family ipv4
+  route-target export 1:4098
+  route-target import 1:4098
+ exit-address-family
+!
+vrf definition Mgmt-vrf
+ !
+ address-family ipv4
+ exit-address-family
+ !
+ address-family ipv6
+ exit-address-family
+!
+vrf definition Shared_user
+!
+enable secret 5 $1$.dDT$CsyxJaRLTS6i/KJgmYh730
+!
+aaa new-model
+!
+!
+aaa group server radius dnac-network-radius-group
+ server name dnac-radius_192.168.1.41
+ ip radius source-interface Loopback0
+!
+aaa authentication login default local
+aaa authentication login VTY_authen group dnac-network-radius-group local
+aaa authorization exec default none 
+aaa authorization exec VTY_author group dnac-network-radius-group local 
+aaa accounting exec default start-stop group dnac-network-radius-group
+!
+!
+!
+!
+!
+aaa server radius dynamic-author
+ client 192.168.1.41 server-key cisco
+!
+aaa session-id common
+boot system switch all flash:cat9k_iosxe.16.06.02.SPA.bin
+switch 1 provision c9500-40x
+!
+!
+!
+!
+ip routing
+!
+ip name-server 192.168.1.10
+no ip domain lookup
+ip domain name dnac-cisco.com
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+cpp system-default
+!
+crypto pki trustpoint 192.168.1.40
+ enrollment mode ra
+ enrollment terminal
+ usage ssl-client
+ revocation-check crl
+!
+!
+crypto pki certificate chain 192.168.1.40
+ certificate ca 00A1C501C82B0A6F26
+  308202DA 308201C2 A0030201 02020900 A1C501C8 2B0A6F26 300D0609 2A864886 
+  F70D0101 0B050030 12311030 0E060355 04030C07 6B756265 2D636130 1E170D31 
+  38303232 33303732 3835305A 170D3139 30323233 30373238 35305A30 0F310D30 
+  0B060355 04030C04 6B6F6E67 30820122 300D0609 2A864886 F70D0101 01050003 
+  82010F00 3082010A 02820101 00AFC54D 2084EC12 2EA432C8 A4E467FA B7B6E792 
+  14728FD0 B220098E 02041CF6 3CE5374B 3B44F1DA E44EE3D9 A14731B2 D7DA744D 
+  21959AB5 6ED80AF0 00C88AA8 666E5B56 CFEF86CC 8202056F 1E1BB229 C626D76A 
+  EB2AD2A4 A1CC3DF3 F8266150 7AC71736 60E2EEEE 87BFDFA3 EB56B379 408F4FA5 
+  7C303D8F 1E16F817 5971FC21 34E572B6 E1ACB1F1 BEE7B038 459D9847 DB4BD1AC 
+  3F499D5E F3F181AF 0B0682BD 88111E9A 06569C83 0AF57508 4D97E7D9 71EB55D4 
+  F1042698 D5B0A140 7D399510 16F4E5F8 7A3F5C4E 7BA8E209 C44CAFA5 59424FFA 
+  FDF7B650 8FA4DC57 BFCA3653 842CED1A 1B73F1E8 A5D94F9C 270CACBD 3198CDB0 
+  D8086D73 CEE09A12 81C6EE6A 27020301 0001A336 30343009 0603551D 13040230 
+  00300B06 03551D0F 04040302 05E0301A 0603551D 11041330 1182096C 6F63616C 
+  686F7374 8704C0A8 0128300D 06092A86 4886F70D 01010B05 00038201 01008291 
+  A179D7F2 01C6E426 E1C60160 4691962A F2D075FC EB6E9C50 7B0A5281 99C84258 
+  044C6425 6263AF85 3AD52A21 391F79F0 F8558561 64BD2B75 75066371 27F860B5 
+  48A3F598 20F0F8F2 92E0DAB4 767C8091 FF0E47D6 6C125718 55111226 BF4758F6 
+  9F501DB6 3F15FD6C B5330EB6 2A27296B AF8ED326 C883B6FC D317A99F 4D033EB6 
+  1629EC27 6DC64A89 8F35DB03 8DAAB904 3F740C9E 23AFD48F E13A9E2A 41D94133 
+  CFC3A286 F428907C 33A7E556 BA67C24D 17F0C118 7EC5FE93 F02CBE47 D8996EB4 
+  6CF76116 F99003A7 17F2CC1D 1BCF0D91 F077C5B5 7AB5221B 6C035456 5FF0D073 
+  324F3166 DAC8EA91 D6E5D60C B3B08BD8 70E1DAC4 E91226A5 99FA8CAD B84E
+        quit
+!
+diagnostic bootup level minimal
+spanning-tree mode rapid-pvst
+spanning-tree extend system-id
+archive
+ log config
+  logging enable
+  logging size 300
+dot1x system-auth-control
+!
+username admin privilege 15 password 0 cisco
+username cisco privilege 15 password 0 cisco
+!
+redundancy
+ mode sso
+!
+!
+!
+class-map match-any system-cpp-police-topology-control
+  description Topology control
+class-map match-any system-cpp-police-sw-forward
+  description Sw forwarding, L2 LVX data, LOGGING
+class-map match-any system-cpp-default
+  description DHCP Snooping, EWLC control, EWCL data 
+class-map match-any system-cpp-police-sys-data
+  description Learning cache ovfl, Crypto Control, Exception, EGR Exception, NFL SAMPLED DATA, Gold Pkt, RPF Failed
+class-map match-any system-cpp-police-punt-webauth
+  description Punt Webauth
+class-map match-any system-cpp-police-l2lvx-control
+  description L2 LVX control packets
+class-map match-any system-cpp-police-forus
+  description Forus Address resolution and Forus traffic
+class-map match-any system-cpp-police-multicast-end-station
+  description MCAST END STATION
+class-map match-any system-cpp-police-multicast
+  description Transit Traffic and MCAST Data
+class-map match-any system-cpp-police-l2-control
+  description L2 control
+class-map match-any system-cpp-police-dot1x-auth
+  description DOT1X Auth
+class-map match-any system-cpp-police-data
+  description ICMP redirect, ICMP_GEN and BROADCAST
+class-map match-any system-cpp-police-stackwise-virt-control
+  description Stackwise Virtual
+class-map match-any system-cpp-police-control-low-priority
+  description General punt
+class-map match-any non-client-nrt-class
+class-map match-any system-cpp-police-routing-control
+  description Routing control
+class-map match-any system-cpp-police-protocol-snooping
+  description Protocol snooping
+!
+policy-map system-cpp-policy
+ class system-cpp-police-data
+  police rate 600 pps
+ class system-cpp-police-sys-data
+  police rate 100 pps
+ class system-cpp-police-sw-forward
+  police rate 1000 pps
+ class system-cpp-police-multicast
+  police rate 500 pps
+ class system-cpp-police-multicast-end-station
+  police rate 2000 pps
+ class system-cpp-police-punt-webauth
+  police rate 1000 pps
+ class system-cpp-police-l2-control
+  police rate 2000 pps
+ class system-cpp-police-stackwise-virt-control
+  police rate 8000 pps
+ class system-cpp-police-routing-control
+  police rate 5400 pps
+ class system-cpp-police-control-low-priority
+  police rate 200 pps
+ class system-cpp-police-l2lvx-control
+  police rate 1000 pps
+ class system-cpp-police-topology-control
+  police rate 13000 pps
+ class system-cpp-police-dot1x-auth
+  police rate 1000 pps
+ class system-cpp-police-protocol-snooping
+  police rate 2000 pps
+ class system-cpp-police-forus
+  police rate 1000 pps
+ class system-cpp-default
+  police rate 1000 pps
+!
+! 
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+interface Loopback0
+ description Fabric Node Router ID
+ ip address 10.128.1.1 255.255.255.255
+ ip router isis 
+!
+interface GigabitEthernet0/0
+ vrf forwarding Mgmt-vrf
+ ip address 10.105.14.109 255.255.255.192
+ speed 1000
+ negotiation auto
+!
+interface TenGigabitEthernet1/0/1
+!
+interface TenGigabitEthernet1/0/2
+!
+interface TenGigabitEthernet1/0/3
+ description Fabric Physical Link
+ no switchport
+ dampening
+ ip address 10.128.2.65 255.255.255.252
+ ip lisp source-locator Loopback0
+ ip router isis 
+ logging event link-status
+ load-interval 30
+ bfd interval 500 min_rx 50 multiplier 3
+ no bfd echo
+ isis network point-to-point 
+!
+interface TenGigabitEthernet1/0/4
+!
+interface TenGigabitEthernet1/0/5
+!
+interface TenGigabitEthernet1/0/6
+!
+interface TenGigabitEthernet1/0/7
+!
+interface TenGigabitEthernet1/0/8
+!
+interface TenGigabitEthernet1/0/9
+!
+interface TenGigabitEthernet1/0/10
+!
+interface TenGigabitEthernet1/0/11
+!
+interface TenGigabitEthernet1/0/12
+!
+interface TenGigabitEthernet1/0/13
+!
+interface TenGigabitEthernet1/0/14
+!
+interface TenGigabitEthernet1/0/15
+!
+interface TenGigabitEthernet1/0/16
+!
+interface TenGigabitEthernet1/0/17
+!
+interface TenGigabitEthernet1/0/18
+!
+interface TenGigabitEthernet1/0/19
+!
+interface TenGigabitEthernet1/0/20
+!
+interface TenGigabitEthernet1/0/21
+!
+interface TenGigabitEthernet1/0/22
+!
+interface TenGigabitEthernet1/0/23
+!
+interface TenGigabitEthernet1/0/24
+!
+interface TenGigabitEthernet1/0/25
+!
+interface TenGigabitEthernet1/0/26
+!
+interface TenGigabitEthernet1/0/27
+!
+interface TenGigabitEthernet1/0/28
+!
+interface TenGigabitEthernet1/0/29
+!
+interface TenGigabitEthernet1/0/30
+!
+interface TenGigabitEthernet1/0/31
+!
+interface TenGigabitEthernet1/0/32
+!
+interface TenGigabitEthernet1/0/33
+!
+interface TenGigabitEthernet1/0/34
+!
+interface TenGigabitEthernet1/0/35
+!
+interface TenGigabitEthernet1/0/36
+!
+interface TenGigabitEthernet1/0/37
+!
+interface TenGigabitEthernet1/0/38
+!
+interface TenGigabitEthernet1/0/39
+ switchport mode access
+!
+interface TenGigabitEthernet1/0/40
+ description Fabric Physical Link
+ no switchport
+ dampening
+ ip address 10.128.2.69 255.255.255.252
+ ip lisp source-locator Loopback0
+ ip router isis 
+ logging event link-status
+ load-interval 30
+ bfd interval 500 min_rx 50 multiplier 3
+ no bfd echo
+ isis network point-to-point 
+!
+interface TenGigabitEthernet1/1/1
+!
+interface TenGigabitEthernet1/1/2
+!
+interface TenGigabitEthernet1/1/3
+!
+interface TenGigabitEthernet1/1/4
+!
+interface TenGigabitEthernet1/1/5
+!
+interface TenGigabitEthernet1/1/6
+!
+interface TenGigabitEthernet1/1/7
+!
+interface TenGigabitEthernet1/1/8
+!
+interface FortyGigabitEthernet1/1/1
+!
+interface FortyGigabitEthernet1/1/2
+!
+interface Vlan1
+ no ip address
+!
+interface Vlan192
+ ip address 192.168.1.4 255.255.255.0
+!
+router isis
+ net 49.0000.1010.1128.1002.00
+ domain-password cisco
+ metric-style wide
+ log-adjacency-changes
+ nsf ietf
+ bfd all-interfaces
+!
+ip forward-protocol nd
+ip http server
+ip http secure-server
+ip http client source-interface Loopback0
+ip route vrf Mgmt-vrf 0.0.0.0 0.0.0.0 10.105.14.65
+!
+ip ssh version 2
+!
+ip radius source-interface Loopback0 
+!
+ip sla 1
+ icmp-echo 192.168.1.10 source-ip 10.128.3.1
+ vrf DEFAULT_VN
+ threshold 3
+ip sla schedule 1 life forever start-time now
+ip sla 2
+ icmp-echo 192.168.1.10 source-ip 10.128.3.13
+ vrf CORP_VRF
+ threshold 3
+ip sla schedule 2 life forever start-time now
+ip sla 3
+ icmp-echo 192.168.1.10 source-ip 10.128.3.5
+ threshold 3
+ip sla schedule 3 life forever start-time now
+ip sla 4
+ icmp-echo 192.168.1.10 source-ip 10.128.3.1
+ vrf DEFAULT_VN
+ threshold 3
+ip sla schedule 4 life forever start-time now
+ip sla 5
+ icmp-echo 192.168.1.10 source-ip 10.128.3.13
+ vrf CORP_VRF
+ threshold 3
+ip sla schedule 5 life forever start-time now
+ip sla 6
+ icmp-echo 192.168.1.10 source-ip 10.128.3.5
+ threshold 3
+ip sla schedule 6 life forever start-time now
+!
+snmp-server community public RO
+snmp-server community private RW
+!
+!
+radius-server attribute 6 on-for-login-auth
+radius-server attribute 6 support-multiple
+radius-server attribute 8 include-in-access-req
+radius-server attribute 25 access-request include
+radius-server dead-criteria time 5 tries 3
+radius-server deadtime 30
+!
+radius server dnac-radius_192.168.1.41
+ address ipv4 192.168.1.41 auth-port 1812 acct-port 1813
+ timeout 2
+ retransmit 1
+ pac key cisco
+!
+!
+control-plane
+ service-policy input system-cpp-policy
+!
+!
+line con 0
+ stopbits 1
+line vty 0 4
+ authorization exec VTY_author
+ login authentication VTY_authen
+ transport input all
+ transport output telnet ssh
+line vty 5 97
+ authorization exec VTY_author
+ login authentication VTY_authen
+ transport input all
+!
+!
+wsma agent exec
+!
+wsma agent config
+!
+wsma agent filesys
+!
+wsma agent notify
+!
+!
+end
+
+POD3-C9500-48X-A#  
+POD3-C9500-48X-A#
+POD3-C9500-48X-A#
+POD3-C9500-48X-A#
+POD3-C9500-48X-A#sh archiv log config all
+ idx   sess           user@line      Logged command
+  715     0          admin@vty0     |!exec: enable
+  716     0          admin@vty0     |!exec: enable
+  717     0          admin@vty1     |!exec: enable
+  718     0          admin@vty0     |!exec: enable
+  719     0          admin@vty1     |!exec: enable
+  720     0          admin@vty0     |!exec: enable
+  721     0          admin@vty0     |!exec: enable
+  722     0          admin@vty1     |!exec: enable
+  723     0          admin@vty0     |!exec: enable
+  724     0          admin@vty1     |!exec: enable
+  725     0          admin@vty0     |!exec: enable
+  726     0          admin@vty0     |!exec: enable
+  727     0          admin@vty1     |!exec: enable
+  728     0          admin@vty0     |!exec: enable
+  729     0          admin@vty1     |!exec: enable
+  730     0          admin@vty0     |!exec: enable
+  731     0          admin@vty0     |!exec: enable
+  732     0          admin@vty1     |!exec: enable
+  733     0          admin@vty0     |!exec: enable
+  734     0          admin@vty1     |!exec: enable
+  735     0          admin@vty2     |!exec: enable
+  736     0          admin@vty1     |!exec: enable
+  737     0          admin@vty1     |!exec: enable
+  738     0          admin@vty2     |!exec: enable
+  739     0          admin@vty1     |!exec: enable
+  740     0          admin@vty2     |!exec: enable
+  741     0          admin@vty1     |!exec: enable
+  742     0          admin@vty2     |!exec: enable
+  743     0          admin@vty3     |!exec: enable
+  744     0          admin@vty2     |!exec: enable
+  745     0          admin@vty3     |!exec: enable
+  746     0          admin@vty2     |!exec: enable
+  747     0          admin@vty1     |!exec: enable
+  748     0          admin@vty1     |!exec: enable
+  749     0          admin@vty2     |!exec: enable
+  750     0          admin@vty2     |!exec: enable
+  751     0          admin@vty2     |!exec: enable
+  752    53          admin@vty2     |vrf definition Test
+  753    53          admin@vty2     | rd 1:4099 
+  754    53          admin@vty2     | address-family ipv4 
+  755    53          admin@vty2     |  route-target import 1:4099 
+  756    53          admin@vty2     |  route-target export 1:4099 
+  757    53          admin@vty2     |  vrf definition DEFAULT_VN
+  758    53          admin@vty2     | rd 1:4098 
+  759    53          admin@vty2     | address-family ipv4 
+  760    53          admin@vty2     |  route-target import 1:4098 
+  761    53          admin@vty2     |  route-target export 1:4098 
+  762    53          admin@vty2     |  vrf definition CORP_VRF
+  763    53          admin@vty2     | rd 1:0 
+  764    53          admin@vty2     | address-family ipv4 
+  765    53          admin@vty2     |  route-target import 1:0 
+  766    53          admin@vty2     |  route-target export 1:0 
+  767    53          admin@vty2     |  vrf definition Shared_user
+  768    53          admin@vty2     | rd 1:0 
+  769     0          admin@vty2     |!exec: enable
+  770     0          admin@vty2     |!exec: enable
+  771    55          admin@vty2     |ip sla 1
+  772    55          admin@vty2     | icmp-echo 192.168.1.10 source-ip 10.128.3.9
+  773    55          admin@vty2     |  frequency 60
+  774    55          admin@vty2     |  threshold 3
+  775    55          admin@vty2     |  timeout 5000
+  776    55          admin@vty2     |  vrf DEFAULT_VN
+  777    55          admin@vty2     |  ip sla schedule 1  life forever start-time now 
+  778    57          admin@vty2     |ip sla 2
+  779    57          admin@vty2     | icmp-echo 192.168.1.10 source-ip 10.128.3.1
+  780    57          admin@vty2     |  frequency 60
+  781    57          admin@vty2     |  threshold 3
+  782    57          admin@vty2     |  timeout 5000
+  783    57          admin@vty2     |  ip sla schedule 2  life forever start-time now 
+  784    59          admin@vty2     |ip sla 3
+  785    59          admin@vty2     | icmp-echo 192.168.1.10 source-ip 10.128.3.13
+  786    59          admin@vty2     |  frequency 60
+  787    59          admin@vty2     |  threshold 3
+  788    59          admin@vty2     |  timeout 5000
+  789    59          admin@vty2     |  vrf CORP_VRF
+  790    59          admin@vty2     |  ip sla schedule 3  life forever start-time now 
+  791    61          admin@vty2     |ip sla 4
+  792    61          admin@vty2     | icmp-echo 192.168.1.10 source-ip 10.128.3.5
+  793    61          admin@vty2     |  frequency 60
+  794    61          admin@vty2     |  threshold 3
+  795    61          admin@vty2     |  timeout 5000
+  796    61          admin@vty2     |  vrf Shared_user
+  797     0          admin@vty3     |!exec: enable
+  798    62          admin@vty3     |no ip sla 4
+  799    63          admin@vty3     |ip sla 4
+  800    63          admin@vty3     | icmp-echo 192.168.1.10 source-ip 10.128.3.17
+  801    63          admin@vty3     |  frequency 60
+  802    63          admin@vty3     |  threshold 3
+  803    63          admin@vty3     |  timeout 5000
+  804    63          admin@vty3     |  vrf Test
+  805    63          admin@vty3     |  ip sla schedule 4  life forever start-time now 
+  806     0          admin@vty2     |!exec: enable
+  807     0          admin@vty4     |!exec: enable
+  808     0          admin@vty2     |!exec: enable
+  809     0          admin@vty0     |!exec: enable
+  810    65          admin@vty0     |no vrf definition Test 
+  811    65          admin@vty0     |no vrf definition DEFAULT_VN 
+  812    65          admin@vty0     |no vrf definition CORP_VRF 
+  813    65          admin@vty0     |no vrf definition Shared_user 
+  814    65          admin@vty0     |interface TenGigabitEthernet1/0/2 
+  815    65          admin@vty0     | no load-interval 
+  816    65          admin@vty0     | no spanning-tree portfast 
+  817    65          admin@vty0     | no switchport trunk native vlan 
+  818    65          admin@vty0     | switchport 
+  819    65          admin@vty0     | switchport mode dynamic auto 
+  820    65          admin@vty0     | switchport access vlan 1
+  821    65          admin@vty0     | exit 
+  822    67          admin@vty0     |no ip sla 1
+  823    69          admin@vty0     |no ip sla 2
+  824    71          admin@vty0     |no ip sla 3
+  825    73          admin@vty0     |no ip sla 4
+  826     0          admin@vty0     |!exec: enable
+  827    75          admin@vty0     |vrf definition DEFAULT_VN
+  828    75          admin@vty0     | rd 1:4098 
+  829    75          admin@vty0     | address-family ipv4 
+  830    75          admin@vty0     |  route-target import 1:4098 
+  831    75          admin@vty0     |  route-target export 1:4098 
+  832    75          admin@vty0     |  vrf definition CORP_VRF
+  833    75          admin@vty0     | rd 1:0 
+  834    75          admin@vty0     | address-family ipv4 
+  835    75          admin@vty0     |  route-target import 1:0 
+  836    75          admin@vty0     |  route-target export 1:0 
+  837    75          admin@vty0     |  vrf definition Shared_user
+  838    75          admin@vty0     | rd 1:0 
+  839     0          admin@vty2     |!exec: enable
+  840     0          admin@vty0     |!exec: enable
+  841    77          admin@vty0     |ip sla 1
+  842    77          admin@vty0     | icmp-echo 192.168.1.10 source-ip 10.128.3.9
+  843    77          admin@vty0     |  frequency 60
+  844    77          admin@vty0     |  threshold 3
+  845    77          admin@vty0     |  timeout 5000
+  846    77          admin@vty0     |  vrf Shared_user
+  847     0          admin@vty2     |!exec: enable
+  848    78          admin@vty2     |no ip sla 1
+  849    79          admin@vty2     |ip sla 1
+  850    79          admin@vty2     | icmp-echo 192.168.1.10 source-ip 10.128.3.1
+  851    79          admin@vty2     |  frequency 60
+  852    79          admin@vty2     |  threshold 3
+  853    79          admin@vty2     |  timeout 5000
+  854    79          admin@vty2     |  vrf DEFAULT_VN
+  855    79          admin@vty2     |  ip sla schedule 1  life forever start-time now 
+  856    81          admin@vty2     |ip sla 2
+  857    81          admin@vty2     | icmp-echo 192.168.1.10 source-ip 10.128.3.13
+  858    81          admin@vty2     |  frequency 60
+  859    81          admin@vty2     |  threshold 3
+  860    81          admin@vty2     |  timeout 5000
+  861    81          admin@vty2     |  vrf CORP_VRF
+  862    81          admin@vty2     |  ip sla schedule 2  life forever start-time now 
+  863    83          admin@vty2     |ip sla 3
+  864    83          admin@vty2     | icmp-echo 192.168.1.10 source-ip 10.128.3.5
+  865    83          admin@vty2     |  frequency 60
+  866    83          admin@vty2     |  threshold 3
+  867    83          admin@vty2     |  timeout 5000
+  868    83          admin@vty2     |  ip sla schedule 3  life forever start-time now 
+  869    85          admin@vty2     |ip sla 4
+  870    85          admin@vty2     | icmp-echo 192.168.1.10 source-ip 10.128.3.17
+  871    85          admin@vty2     |  frequency 60
+  872    85          admin@vty2     |  threshold 3
+  873    85          admin@vty2     |  timeout 5000
+  874    85          admin@vty2     |  vrf Test
+  875     0          admin@vty0     |!exec: enable
+  876    86          admin@vty0     |no ip sla 4
+  877     0          admin@vty2     |!exec: enable
+  878     0          admin@vty0     |!exec: enable
+  879    89          admin@vty0     |ip sla 4
+  880    89          admin@vty0     | icmp-echo 192.168.1.10 source-ip 10.128.3.9
+  881    89          admin@vty0     |  frequency 60
+  882    89          admin@vty0     |  threshold 3
+  883    89          admin@vty0     |  timeout 5000
+  884    89          admin@vty0     |  vrf Shared_user
+  885     0          admin@vty2     |!exec: enable
+  886    90          admin@vty2     |no ip sla 4
+  887    91          admin@vty2     |ip sla 4
+  888    91          admin@vty2     | icmp-echo 192.168.1.10 source-ip 10.128.3.1
+  889    91          admin@vty2     |  frequency 60
+  890    91          admin@vty2     |  threshold 3
+  891    91          admin@vty2     |  timeout 5000
+  892    91          admin@vty2     |  vrf DEFAULT_VN
+  893    91          admin@vty2     |  ip sla schedule 4  life forever start-time now 
+  894    93          admin@vty2     |ip sla 5
+  895    93          admin@vty2     | icmp-echo 192.168.1.10 source-ip 10.128.3.13
+  896    93          admin@vty2     |  frequency 60
+  897    93          admin@vty2     |  threshold 3
+  898    93          admin@vty2     |  timeout 5000
+  899    93          admin@vty2     |  vrf CORP_VRF
+  900    93          admin@vty2     |  ip sla schedule 5  life forever start-time now 
+  901    95          admin@vty2     |ip sla 6
+  902    95          admin@vty2     | icmp-echo 192.168.1.10 source-ip 10.128.3.5
+  903    95          admin@vty2     |  frequency 60
+  904    95          admin@vty2     |  threshold 3
+  905    95          admin@vty2     |  timeout 5000
+  906    95          admin@vty2     |  ip sla schedule 6  life forever start-time now 
+  907    97          admin@vty2     |ip sla 7
+  908    97          admin@vty2     | icmp-echo 192.168.1.10 source-ip 10.128.3.17
+  909    97          admin@vty2     |  frequency 60
+  910    97          admin@vty2     |  threshold 3
+  911    97          admin@vty2     |  timeout 5000
+  912    97          admin@vty2     |  vrf Test
+  913     0          admin@vty0     |!exec: enable
+  914    98          admin@vty0     |no ip sla 7
+  915    99          admin@vty0     |ip sla 7
+  916    99          admin@vty0     | icmp-echo 192.168.1.10 source-ip 10.128.3.9
+  917    99          admin@vty0     |  frequency 60
+  918    99          admin@vty0     |  threshold 3
+  919    99          admin@vty0     |  timeout 5000
+  920    99          admin@vty0     |  vrf Shared_user
+  921     0          admin@vty2     |!exec: enable
+  922   100          admin@vty2     |no ip sla 7
+  923   101          admin@vty2     |ip sla 7
+  924   101          admin@vty2     | icmp-echo 192.168.1.10 source-ip 10.128.3.1
+  925   101          admin@vty2     |  frequency 60
+  926   101          admin@vty2     |  threshold 3
+  927   101          admin@vty2     |  timeout 5000
+  928   101          admin@vty2     |  vrf DEFAULT_VN
+  929   101          admin@vty2     |  ip sla schedule 7  life forever start-time now 
+  930   103          admin@vty2     |ip sla 8
+  931   103          admin@vty2     | icmp-echo 192.168.1.10 source-ip 10.128.3.13
+  932   103          admin@vty2     |  frequency 60
+  933   103          admin@vty2     |  threshold 3
+  934   103          admin@vty2     |  timeout 5000
+  935   103          admin@vty2     |  vrf CORP_VRF
+  936   103          admin@vty2     |  ip sla schedule 8  life forever start-time now 
+  937   105          admin@vty2     |ip sla 9
+  938   105          admin@vty2     | icmp-echo 192.168.1.10 source-ip 10.128.3.5
+  939   105          admin@vty2     |  frequency 60
+  940   105          admin@vty2     |  threshold 3
+  941   105          admin@vty2     |  timeout 5000
+  942   105          admin@vty2     |  ip sla schedule 9  life forever start-time now 
+  943   107          admin@vty2     |ip sla 10
+  944   107          admin@vty2     | icmp-echo 192.168.1.10 source-ip 10.128.3.17
+  945   107          admin@vty2     |  frequency 60
+  946   107          admin@vty2     |  threshold 3
+  947   107          admin@vty2     |  timeout 5000
+  948   107          admin@vty2     |  vrf Test
+  949     0          admin@vty0     |!exec: enable
+  950   108          admin@vty0     |no ip sla 10
+  951   109          admin@vty0     |interface TenGigabitEthernet1/0/2 
+  952   109          admin@vty0     | no load-interval 
+  953   109          admin@vty0     | no spanning-tree portfast 
+  954   109          admin@vty0     | no switchport trunk native vlan 
+  955   109          admin@vty0     | switchport 
+  956   109          admin@vty0     | switchport mode dynamic auto 
+  957   109          admin@vty0     | switchport access vlan 1
+  958   109          admin@vty0     | exit 
+  959   111          admin@vty0     |no ip sla 7
+  960   113          admin@vty0     |no ip sla 8
+  961     0          admin@vty2     |!exec: enable
+  962     0          admin@vty3     |!exec: enable
+  963   115          admin@vty0     |no ip sla 9
+  964     0          admin@vty2     |!exec: enable
+  965     0          admin@vty3     |!exec: enable
+  966     0          admin@vty0     |!exec: enable
+  967   117          admin@vty0     |no ip domain-lookup 
+  968   117          admin@vty0     |ip tacacs source-interface Loopback0 
+  969   117          admin@vty0     |ip radius source-interface Loopback0 
+  970   117          admin@vty0     |aaa authorization exec VTY_author group dnac-network-radius-group local 
+  971   117          admin@vty0     |radius-server vsa send authentication 
+  972   117          admin@vty0     |radius-server vsa send accounting 
+  973   117          admin@vty0     |line vty 0 97
+  974   117          admin@vty0     | login authentication VTY_authen
+  975   117          admin@vty0     | authorization exec VTY_author
+  976   117          admin@vty0     | transport input all 
+  977   117          admin@vty0     | exit 
+  978     0          admin@vty0     |!exec: enable
+  979   119          admin@vty0     |no ip domain-lookup 
+  980   119          admin@vty0     |ip tacacs source-interface Loopback0 
+  981   119          admin@vty0     |ip radius source-interface Loopback0 
+  982   119          admin@vty0     |aaa authorization exec VTY_author group dnac-network-radius-group local if-authenticated 
+  983   119          admin@vty0     |radius-server vsa send authentication 
+  984   119          admin@vty0     |radius-server vsa send accounting 
+  985   119          admin@vty0     |line vty 0 97
+  986   119          admin@vty0     | login authentication VTY_authen
+  987   119          admin@vty0     | authorization exec VTY_author
+  988   119          admin@vty0     | transport input all 
+  989   119          admin@vty0     | exit 
+  990   121          admin@vty0     |no ip domain-lookup 
+  991   121          admin@vty0     |ip tacacs source-interface Loopback0 
+  992   121          admin@vty0     |ip radius source-interface Loopback0 
+  993   121          admin@vty0     |aaa authorization exec VTY_author group dnac-network-radius-group local 
+  994   121          admin@vty0     |radius-server vsa send authentication 
+  995   121          admin@vty0     |radius-server vsa send accounting 
+  996   121          admin@vty0     |line vty 0 97
+  997   121          admin@vty0     | login authentication VTY_authen
+  998   121          admin@vty0     | authorization exec VTY_author
+  999   121          admin@vty0     | transport input all 
+ 1000   121          admin@vty0     | exit 
+ 1001     0          admin@vty0     |!exec: enable
+ 1002   123          admin@vty0     |no ip domain-lookup 
+ 1003   123          admin@vty0     |ip tacacs source-interface Loopback0 
+ 1004   123          admin@vty0     |ip radius source-interface Loopback0 
+ 1005   123          admin@vty0     |aaa authorization exec VTY_author group dnac-network-radius-group local if-authenticated 
+ 1006   123          admin@vty0     |radius-server vsa send authentication 
+ 1007   123          admin@vty0     |radius-server vsa send accounting 
+ 1008   123          admin@vty0     |line vty 0 97
+ 1009   123          admin@vty0     | login authentication VTY_authen
+ 1010   123          admin@vty0     | authorization exec VTY_author
+ 1011   123          admin@vty0     | transport input all 
+ 1012   123          admin@vty0     | exit 
+ 1013   125          admin@vty0     |no crypto pki trustpoint 192.168.1.40
+yes
+ 1014   125          admin@vty0     |crypto key zeroize rsa 192.168.1.40
+
+POD3-C9500-48X-A#sh archiv log config all
+ idx   sess           user@line      Logged command
+  715     0          admin@vty0     |!exec: enable
+  716     0          admin@vty0     |!exec: enable
+  717     0          admin@vty1     |!exec: enable
+  718     0          admin@vty0     |!exec: enable
+  719     0          admin@vty1     |!exec: enable
+  720     0          admin@vty0     |!exec: enable
+  721     0          admin@vty0     |!exec: enable
+  722     0          admin@vty1     |!exec: enable
+  723     0          admin@vty0     |!exec: enable
+  724     0          admin@vty1     |!exec: enable
+  725     0          admin@vty0     |!exec: enable
+  726     0          admin@vty0     |!exec: enable
+  727     0          admin@vty1     |!exec: enable
+  728     0          admin@vty0     |!exec: enable
+  729     0          admin@vty1     |!exec: enable
+  730     0          admin@vty0     |!exec: enable
+  731     0          admin@vty0     |!exec: enable
+  732     0          admin@vty1     |!exec: enable
+  733     0          admin@vty0     |!exec: enable
+  734     0          admin@vty1     |!exec: enable
+  735     0          admin@vty2     |!exec: enable
+  736     0          admin@vty1     |!exec: enable
+  737     0          admin@vty1     |!exec: enable
+  738     0          admin@vty2     |!exec: enable
+  739     0          admin@vty1     |!exec: enable
+  740     0          admin@vty2     |!exec: enable
+  741     0          admin@vty1     |!exec: enable
+  742     0          admin@vty2     |!exec: enable
+  743     0          admin@vty3     |!exec: enable
+  744     0          admin@vty2     |!exec: enable
+  745     0          admin@vty3     |!exec: enable
+  746     0          admin@vty2     |!exec: enable
+  747     0          admin@vty1     |!exec: enable
+  748     0          admin@vty1     |!exec: enable
+  749     0          admin@vty2     |!exec: enable
+  750     0          admin@vty2     |!exec: enable
+  751     0          admin@vty2     |!exec: enable
+  752    53          admin@vty2     |vrf definition Test
+  753    53          admin@vty2     | rd 1:4099 
+  754    53          admin@vty2     | address-family ipv4 
+  755    53          admin@vty2     |  route-target import 1:4099 
+  756    53          admin@vty2     |  route-target export 1:4099 
+  757    53          admin@vty2     |  vrf definition DEFAULT_VN
+  758    53          admin@vty2     | rd 1:4098 
+  759    53          admin@vty2     | address-family ipv4 
+  760    53          admin@vty2     |  route-target import 1:4098 
+  761    53          admin@vty2     |  route-target export 1:4098 
+  762    53          admin@vty2     |  vrf definition CORP_VRF
+  763    53          admin@vty2     | rd 1:0 
+  764    53          admin@vty2     | address-family ipv4 
+  765    53          admin@vty2     |  route-target import 1:0 
+  766    53          admin@vty2     |  route-target export 1:0 
+  767    53          admin@vty2     |  vrf definition Shared_user
+  768    53          admin@vty2     | rd 1:0 
+  769     0          admin@vty2     |!exec: enable
+  770     0          admin@vty2     |!exec: enable
+  771    55          admin@vty2     |ip sla 1
+  772    55          admin@vty2     | icmp-echo 192.168.1.10 source-ip 10.128.3.9
+  773    55          admin@vty2     |  frequency 60
+  774    55          admin@vty2     |  threshold 3
+  775    55          admin@vty2     |  timeout 5000
+  776    55          admin@vty2     |  vrf DEFAULT_VN
+  777    55          admin@vty2     |  ip sla schedule 1  life forever start-time now 
+  778    57          admin@vty2     |ip sla 2
+  779    57          admin@vty2     | icmp-echo 192.168.1.10 source-ip 10.128.3.1
+  780    57          admin@vty2     |  frequency 60
+  781    57          admin@vty2     |  threshold 3
+  782    57          admin@vty2     |  timeout 5000
+  783    57          admin@vty2     |  ip sla schedule 2  life forever start-time now 
+  784    59          admin@vty2     |ip sla 3
+  785    59          admin@vty2     | icmp-echo 192.168.1.10 source-ip 10.128.3.13
+  786    59          admin@vty2     |  frequency 60
+  787    59          admin@vty2     |  threshold 3
+  788    59          admin@vty2     |  timeout 5000
+  789    59          admin@vty2     |  vrf CORP_VRF
+  790    59          admin@vty2     |  ip sla schedule 3  life forever start-time now 
+  791    61          admin@vty2     |ip sla 4
+  792    61          admin@vty2     | icmp-echo 192.168.1.10 source-ip 10.128.3.5
+  793    61          admin@vty2     |  frequency 60
+  794    61          admin@vty2     |  threshold 3
+  795    61          admin@vty2     |  timeout 5000
+  796    61          admin@vty2     |  vrf Shared_user
+  797     0          admin@vty3     |!exec: enable
+  798    62          admin@vty3     |no ip sla 4
+  799    63          admin@vty3     |ip sla 4
+  800    63          admin@vty3     | icmp-echo 192.168.1.10 source-ip 10.128.3.17
+  801    63          admin@vty3     |  frequency 60
+  802    63          admin@vty3     |  threshold 3
+  803    63          admin@vty3     |  timeout 5000
+  804    63          admin@vty3     |  vrf Test
+  805    63          admin@vty3     |  ip sla schedule 4  life forever start-time now 
+  806     0          admin@vty2     |!exec: enable
+  807     0          admin@vty4     |!exec: enable
+  808     0          admin@vty2     |!exec: enable
+  809     0          admin@vty0     |!exec: enable
+  810    65          admin@vty0     |no vrf definition Test 
+  811    65          admin@vty0     |no vrf definition DEFAULT_VN 
+  812    65          admin@vty0     |no vrf definition CORP_VRF 
+  813    65          admin@vty0     |no vrf definition Shared_user 
+  814    65          admin@vty0     |interface TenGigabitEthernet1/0/2 
+  815    65          admin@vty0     | no load-interval 
+  816    65          admin@vty0     | no spanning-tree portfast 
+  817    65          admin@vty0     | no switchport trunk native vlan 
+  818    65          admin@vty0     | switchport 
+  819    65          admin@vty0     | switchport mode dynamic auto 
+  820    65          admin@vty0     | switchport access vlan 1
+  821    65          admin@vty0     | exit 
+  822    67          admin@vty0     |no ip sla 1
+  823    69          admin@vty0     |no ip sla 2
+  824    71          admin@vty0     |no ip sla 3
+  825    73          admin@vty0     |no ip sla 4
+  826     0          admin@vty0     |!exec: enable
+  827    75          admin@vty0     |vrf definition DEFAULT_VN
+  828    75          admin@vty0     | rd 1:4098 
+  829    75          admin@vty0     | address-family ipv4 
+  830    75          admin@vty0     |  route-target import 1:4098 
+  831    75          admin@vty0     |  route-target export 1:4098 
+  832    75          admin@vty0     |  vrf definition CORP_VRF
+  833    75          admin@vty0     | rd 1:0 
+  834    75          admin@vty0     | address-family ipv4 
+  835    75          admin@vty0     |  route-target import 1:0 
+  836    75          admin@vty0     |  route-target export 1:0 
+  837    75          admin@vty0     |  vrf definition Shared_user
+  838    75          admin@vty0     | rd 1:0 
+  839     0          admin@vty2     |!exec: enable
+  840     0          admin@vty0     |!exec: enable
+  841    77          admin@vty0     |ip sla 1
+  842    77          admin@vty0     | icmp-echo 192.168.1.10 source-ip 10.128.3.9
+  843    77          admin@vty0     |  frequency 60
+  844    77          admin@vty0     |  threshold 3
+  845    77          admin@vty0     |  timeout 5000
+  846    77          admin@vty0     |  vrf Shared_user
+  847     0          admin@vty2     |!exec: enable
+  848    78          admin@vty2     |no ip sla 1
+  849    79          admin@vty2     |ip sla 1
+  850    79          admin@vty2     | icmp-echo 192.168.1.10 source-ip 10.128.3.1
+  851    79          admin@vty2     |  frequency 60
+  852    79          admin@vty2     |  threshold 3
+  853    79          admin@vty2     |  timeout 5000
+  854    79          admin@vty2     |  vrf DEFAULT_VN
+  855    79          admin@vty2     |  ip sla schedule 1  life forever start-time now 
+  856    81          admin@vty2     |ip sla 2
+  857    81          admin@vty2     | icmp-echo 192.168.1.10 source-ip 10.128.3.13
+  858    81          admin@vty2     |  frequency 60
+  859    81          admin@vty2     |  threshold 3
+  860    81          admin@vty2     |  timeout 5000
+  861    81          admin@vty2     |  vrf CORP_VRF
+  862    81          admin@vty2     |  ip sla schedule 2  life forever start-time now 
+  863    83          admin@vty2     |ip sla 3
+  864    83          admin@vty2     | icmp-echo 192.168.1.10 source-ip 10.128.3.5
+  865    83          admin@vty2     |  frequency 60
+  866    83          admin@vty2     |  threshold 3
+  867    83          admin@vty2     |  timeout 5000
+  868    83          admin@vty2     |  ip sla schedule 3  life forever start-time now 
+  869    85          admin@vty2     |ip sla 4
+  870    85          admin@vty2     | icmp-echo 192.168.1.10 source-ip 10.128.3.17
+  871    85          admin@vty2     |  frequency 60
+  872    85          admin@vty2     |  threshold 3
+  873    85          admin@vty2     |  timeout 5000
+  874    85          admin@vty2     |  vrf Test
+  875     0          admin@vty0     |!exec: enable
+  876    86          admin@vty0     |no ip sla 4
+  877     0          admin@vty2     |!exec: enable
+  878     0          admin@vty0     |!exec: enable
+  879    89          admin@vty0     |ip sla 4
+  880    89          admin@vty0     | icmp-echo 192.168.1.10 source-ip 10.128.3.9
+  881    89          admin@vty0     |  frequency 60
+  882    89          admin@vty0     |  threshold 3
+  883    89          admin@vty0     |  timeout 5000
+  884    89          admin@vty0     |  vrf Shared_user
+  885     0          admin@vty2     |!exec: enable
+  886    90          admin@vty2     |no ip sla 4
+  887    91          admin@vty2     |ip sla 4
+  888    91          admin@vty2     | icmp-echo 192.168.1.10 source-ip 10.128.3.1
+  889    91          admin@vty2     |  frequency 60
+  890    91          admin@vty2     |  threshold 3
+  891    91          admin@vty2     |  timeout 5000
+  892    91          admin@vty2     |  vrf DEFAULT_VN
+  893    91          admin@vty2     |  ip sla schedule 4  life forever start-time now 
+  894    93          admin@vty2     |ip sla 5
+  895    93          admin@vty2     | icmp-echo 192.168.1.10 source-ip 10.128.3.13
+  896    93          admin@vty2     |  frequency 60
+  897    93          admin@vty2     |  threshold 3
+  898    93          admin@vty2     |  timeout 5000
+  899    93          admin@vty2     |  vrf CORP_VRF
+  900    93          admin@vty2     |  ip sla schedule 5  life forever start-time now 
+  901    95          admin@vty2     |ip sla 6
+  902    95          admin@vty2     | icmp-echo 192.168.1.10 source-ip 10.128.3.5
+  903    95          admin@vty2     |  frequency 60
+  904    95          admin@vty2     |  threshold 3
+  905    95          admin@vty2     |  timeout 5000
+  906    95          admin@vty2     |  ip sla schedule 6  life forever start-time now 
+  907    97          admin@vty2     |ip sla 7
+  908    97          admin@vty2     | icmp-echo 192.168.1.10 source-ip 10.128.3.17
+  909    97          admin@vty2     |  frequency 60
+  910    97          admin@vty2     |  threshold 3
+  911    97          admin@vty2     |  timeout 5000
+  912    97          admin@vty2     |  vrf Test
+  913     0          admin@vty0     |!exec: enable
+  914    98          admin@vty0     |no ip sla 7
+  915    99          admin@vty0     |ip sla 7
+  916    99          admin@vty0     | icmp-echo 192.168.1.10 source-ip 10.128.3.9
+  917    99          admin@vty0     |  frequency 60
+  918    99          admin@vty0     |  threshold 3
+  919    99          admin@vty0     |  timeout 5000
+  920    99          admin@vty0     |  vrf Shared_user
+  921     0          admin@vty2     |!exec: enable
+  922   100          admin@vty2     |no ip sla 7
+  923   101          admin@vty2     |ip sla 7
+  924   101          admin@vty2     | icmp-echo 192.168.1.10 source-ip 10.128.3.1
+  925   101          admin@vty2     |  frequency 60
+  926   101          admin@vty2     |  threshold 3
+  927   101          admin@vty2     |  timeout 5000
+  928   101          admin@vty2     |  vrf DEFAULT_VN
+  929   101          admin@vty2     |  ip sla schedule 7  life forever start-time now 
+  930   103          admin@vty2     |ip sla 8
+  931   103          admin@vty2     | icmp-echo 192.168.1.10 source-ip 10.128.3.13
+  932   103          admin@vty2     |  frequency 60
+  933   103          admin@vty2     |  threshold 3
+  934   103          admin@vty2     |  timeout 5000
+  935   103          admin@vty2     |  vrf CORP_VRF
+  936   103          admin@vty2     |  ip sla schedule 8  life forever start-time now 
+  937   105          admin@vty2     |ip sla 9
+  938   105          admin@vty2     | icmp-echo 192.168.1.10 source-ip 10.128.3.5
+  939   105          admin@vty2     |  frequency 60
+  940   105          admin@vty2     |  threshold 3
+  941   105          admin@vty2     |  timeout 5000
+  942   105          admin@vty2     |  ip sla schedule 9  life forever start-time now 
+  943   107          admin@vty2     |ip sla 10
+  944   107          admin@vty2     | icmp-echo 192.168.1.10 source-ip 10.128.3.17
+  945   107          admin@vty2     |  frequency 60
+  946   107          admin@vty2     |  threshold 3
+  947   107          admin@vty2     |  timeout 5000
+  948   107          admin@vty2     |  vrf Test
+  949     0          admin@vty0     |!exec: enable
+  950   108          admin@vty0     |no ip sla 10
+  951   109          admin@vty0     |interface TenGigabitEthernet1/0/2 
+  952   109          admin@vty0     | no load-interval 
+  953   109          admin@vty0     | no spanning-tree portfast 
+  954   109          admin@vty0     | no switchport trunk native vlan 
+  955   109          admin@vty0     | switchport 
+  956   109          admin@vty0     | switchport mode dynamic auto 
+  957   109          admin@vty0     | switchport access vlan 1
+  958   109          admin@vty0     | exit 
+  959   111          admin@vty0     |no ip sla 7
+  960   113          admin@vty0     |no ip sla 8
+  961     0          admin@vty2     |!exec: enable
+  962     0          admin@vty3     |!exec: enable
+  963   115          admin@vty0     |no ip sla 9
+  964     0          admin@vty2     |!exec: enable
+  965     0          admin@vty3     |!exec: enable
+  966     0          admin@vty0     |!exec: enable
+  967   117          admin@vty0     |no ip domain-lookup 
+  968   117          admin@vty0     |ip tacacs source-interface Loopback0 
+  969   117          admin@vty0     |ip radius source-interface Loopback0 
+  970   117          admin@vty0     |aaa authorization exec VTY_author group dnac-network-radius-group local 
+  971   117          admin@vty0     |radius-server vsa send authentication 
+  972   117          admin@vty0     |radius-server vsa send accounting 
+  973   117          admin@vty0     |line vty 0 97
+  974   117          admin@vty0     | login authentication VTY_authen
+  975   117          admin@vty0     | authorization exec VTY_author
+  976   117          admin@vty0     | transport input all 
+  977   117          admin@vty0     | exit 
+  978     0          admin@vty0     |!exec: enable
+  979   119          admin@vty0     |no ip domain-lookup 
+  980   119          admin@vty0     |ip tacacs source-interface Loopback0 
+  981   119          admin@vty0     |ip radius source-interface Loopback0 
+  982   119          admin@vty0     |aaa authorization exec VTY_author group dnac-network-radius-group local if-authenticated 
+  983   119          admin@vty0     |radius-server vsa send authentication 
+  984   119          admin@vty0     |radius-server vsa send accounting 
+  985   119          admin@vty0     |line vty 0 97
+  986   119          admin@vty0     | login authentication VTY_authen
+  987   119          admin@vty0     | authorization exec VTY_author
+  988   119          admin@vty0     | transport input all 
+  989   119          admin@vty0     | exit 
+  990   121          admin@vty0     |no ip domain-lookup 
+  991   121          admin@vty0     |ip tacacs source-interface Loopback0 
+  992   121          admin@vty0     |ip radius source-interface Loopback0 
+  993   121          admin@vty0     |aaa authorization exec VTY_author group dnac-network-radius-group local 
+  994   121          admin@vty0     |radius-server vsa send authentication 
+  995   121          admin@vty0     |radius-server vsa send accounting 
+  996   121          admin@vty0     |line vty 0 97
+  997   121          admin@vty0     | login authentication VTY_authen
+  998   121          admin@vty0     | authorization exec VTY_author
+  999   121          admin@vty0     | transport input all 
+ 1000   121          admin@vty0     | exit 
+ 1001     0          admin@vty0     |!exec: enable
+ 1002   123          admin@vty0     |no ip domain-lookup 
+ 1003   123          admin@vty0     |ip tacacs source-interface Loopback0 
+ 1004   123          admin@vty0     |ip radius source-interface Loopback0 
+ 1005   123          admin@vty0     |aaa authorization exec VTY_author group dnac-network-radius-group local if-authenticated 
+ 1006   123          admin@vty0     |radius-server vsa send authentication 
+ 1007   123          admin@vty0     |radius-server vsa send accounting 
+ 1008   123          admin@vty0     |line vty 0 97
+ 1009   123          admin@vty0     | login authentication VTY_authen
+ 1010   123          admin@vty0     | authorization exec VTY_author
+ 1011   123          admin@vty0     | transport input all 
+ 1012   123          admin@vty0     | exit 
+ 1013   125          admin@vty0     |no crypto pki trustpoint 192.168.1.40
+yes
+ 1014   125          admin@vty0     |crypto key zeroize rsa 192.168.1.40
+
+POD3-C9500-48X-A# 
+POD3-C9500-48X-A#
+POD3-C9500-48X-A#sh run
+Building configuration...
+
+Current configuration : 9083 bytes
+!
+! Last configuration change at 06:12:33 UTC Sat Mar 31 2018 by admin
+!
+version 16.6
+no service pad
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no platform punt-keepalive disable-kernel-core
+!
+hostname POD3-C9500-48X-A
+!
+!
+vrf definition CORP_VRF
+ rd 1:0
+ !
+ address-family ipv4
+  route-target export 1:0
+  route-target import 1:0
+ exit-address-family
+!
+vrf definition DEFAULT_VN
+ rd 1:4098
+ !
+ address-family ipv4
+  route-target export 1:4098
+  route-target import 1:4098
+ exit-address-family
+!
+vrf definition Mgmt-vrf
+ !
+ address-family ipv4
+ exit-address-family
+ !
+ address-family ipv6
+ exit-address-family
+!
+vrf definition Shared_user
+!
+enable secret 5 $1$.dDT$CsyxJaRLTS6i/KJgmYh730
+!
+aaa new-model
+!
+!
+aaa group server radius dnac-network-radius-group
+ server name dnac-radius_192.168.1.41
+ ip radius source-interface Loopback0
+!
+aaa authentication login default local
+aaa authentication login VTY_authen group dnac-network-radius-group local
+aaa authorization exec default none 
+aaa authorization exec VTY_author group dnac-network-radius-group local if-authenticated 
+aaa accounting exec default start-stop group dnac-network-radius-group
+!
+!
+!
+!
+!
+aaa server radius dynamic-author
+ client 192.168.1.41 server-key cisco
+!
+aaa session-id common
+boot system switch all flash:cat9k_iosxe.16.06.02.SPA.bin
+switch 1 provision c9500-40x
+!
+!
+!
+!
+ip routing
+!
+ip name-server 192.168.1.10
+no ip domain lookup
+ip domain name dnac-cisco.com
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+cpp system-default
+!
+!
+!
+diagnostic bootup level minimal
+spanning-tree mode rapid-pvst
+spanning-tree extend system-id
+archive
+ log config
+  logging enable
+  logging size 300
+dot1x system-auth-control
+!
+username admin privilege 15 password 0 cisco
+username cisco privilege 15 password 0 cisco
+!
+redundancy
+ mode sso
+!
+!
+!
+class-map match-any system-cpp-police-topology-control
+  description Topology control
+class-map match-any system-cpp-police-sw-forward
+  description Sw forwarding, L2 LVX data, LOGGING
+class-map match-any system-cpp-default
+  description DHCP Snooping, EWLC control, EWCL data 
+class-map match-any system-cpp-police-sys-data
+  description Learning cache ovfl, Crypto Control, Exception, EGR Exception, NFL SAMPLED DATA, Gold Pkt, RPF Failed
+class-map match-any system-cpp-police-punt-webauth
+  description Punt Webauth
+class-map match-any system-cpp-police-l2lvx-control
+  description L2 LVX control packets
+class-map match-any system-cpp-police-forus
+  description Forus Address resolution and Forus traffic
+class-map match-any system-cpp-police-multicast-end-station
+  description MCAST END STATION
+class-map match-any system-cpp-police-multicast
+  description Transit Traffic and MCAST Data
+class-map match-any system-cpp-police-l2-control
+  description L2 control
+class-map match-any system-cpp-police-dot1x-auth
+  description DOT1X Auth
+class-map match-any system-cpp-police-data
+  description ICMP redirect, ICMP_GEN and BROADCAST
+class-map match-any system-cpp-police-stackwise-virt-control
+  description Stackwise Virtual
+class-map match-any system-cpp-police-control-low-priority
+  description General punt
+class-map match-any non-client-nrt-class
+class-map match-any system-cpp-police-routing-control
+  description Routing control
+class-map match-any system-cpp-police-protocol-snooping
+  description Protocol snooping
+!
+policy-map system-cpp-policy
+ class system-cpp-police-data
+  police rate 600 pps
+ class system-cpp-police-sys-data
+  police rate 100 pps
+ class system-cpp-police-sw-forward
+  police rate 1000 pps
+ class system-cpp-police-multicast
+  police rate 500 pps
+ class system-cpp-police-multicast-end-station
+  police rate 2000 pps
+ class system-cpp-police-punt-webauth
+  police rate 1000 pps
+ class system-cpp-police-l2-control
+  police rate 2000 pps
+ class system-cpp-police-stackwise-virt-control
+  police rate 8000 pps
+ class system-cpp-police-routing-control
+  police rate 5400 pps
+ class system-cpp-police-control-low-priority
+  police rate 200 pps
+ class system-cpp-police-l2lvx-control
+  police rate 1000 pps
+ class system-cpp-police-topology-control
+  police rate 13000 pps
+ class system-cpp-police-dot1x-auth
+  police rate 1000 pps
+ class system-cpp-police-protocol-snooping
+  police rate 2000 pps
+ class system-cpp-police-forus
+  police rate 1000 pps
+ class system-cpp-default
+  police rate 1000 pps
+!
+! 
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+interface Loopback0
+ description Fabric Node Router ID
+ ip address 10.128.1.1 255.255.255.255
+ ip router isis 
+!
+interface GigabitEthernet0/0
+ vrf forwarding Mgmt-vrf
+ ip address 10.105.14.109 255.255.255.192
+ speed 1000
+ negotiation auto
+!
+interface TenGigabitEthernet1/0/1
+!
+interface TenGigabitEthernet1/0/2
+!
+interface TenGigabitEthernet1/0/3
+ description Fabric Physical Link
+ no switchport
+ dampening
+ ip address 10.128.2.65 255.255.255.252
+ ip lisp source-locator Loopback0
+ ip router isis 
+ logging event link-status
+ load-interval 30
+ bfd interval 500 min_rx 50 multiplier 3
+ no bfd echo
+ isis network point-to-point 
+!
+interface TenGigabitEthernet1/0/4
+!
+interface TenGigabitEthernet1/0/5
+!
+interface TenGigabitEthernet1/0/6
+!
+interface TenGigabitEthernet1/0/7
+!
+interface TenGigabitEthernet1/0/8
+!
+interface TenGigabitEthernet1/0/9
+!
+interface TenGigabitEthernet1/0/10
+!
+interface TenGigabitEthernet1/0/11
+!
+interface TenGigabitEthernet1/0/12
+!
+interface TenGigabitEthernet1/0/13
+!
+interface TenGigabitEthernet1/0/14
+!
+interface TenGigabitEthernet1/0/15
+!
+interface TenGigabitEthernet1/0/16
+!
+interface TenGigabitEthernet1/0/17
+!
+interface TenGigabitEthernet1/0/18
+!
+interface TenGigabitEthernet1/0/19
+!
+interface TenGigabitEthernet1/0/20
+!
+interface TenGigabitEthernet1/0/21
+!
+interface TenGigabitEthernet1/0/22
+!
+interface TenGigabitEthernet1/0/23
+!
+interface TenGigabitEthernet1/0/24
+!
+interface TenGigabitEthernet1/0/25
+!
+interface TenGigabitEthernet1/0/26
+!
+interface TenGigabitEthernet1/0/27
+!
+interface TenGigabitEthernet1/0/28
+!
+interface TenGigabitEthernet1/0/29
+!
+interface TenGigabitEthernet1/0/30
+!
+interface TenGigabitEthernet1/0/31
+!
+interface TenGigabitEthernet1/0/32
+!
+interface TenGigabitEthernet1/0/33
+!
+interface TenGigabitEthernet1/0/34
+!
+interface TenGigabitEthernet1/0/35
+!
+interface TenGigabitEthernet1/0/36
+!
+interface TenGigabitEthernet1/0/37
+!
+interface TenGigabitEthernet1/0/38
+!
+interface TenGigabitEthernet1/0/39
+ switchport mode access
+!
+interface TenGigabitEthernet1/0/40
+ description Fabric Physical Link
+ no switchport
+ dampening
+ ip address 10.128.2.69 255.255.255.252
+ ip lisp source-locator Loopback0
+ ip router isis 
+ logging event link-status
+ load-interval 30
+ bfd interval 500 min_rx 50 multiplier 3
+ no bfd echo
+ isis network point-to-point 
+!
+interface TenGigabitEthernet1/1/1
+!
+interface TenGigabitEthernet1/1/2
+!
+interface TenGigabitEthernet1/1/3
+!
+interface TenGigabitEthernet1/1/4
+!
+interface TenGigabitEthernet1/1/5
+!
+interface TenGigabitEthernet1/1/6
+!
+interface TenGigabitEthernet1/1/7
+!
+interface TenGigabitEthernet1/1/8
+!
+interface FortyGigabitEthernet1/1/1
+!
+interface FortyGigabitEthernet1/1/2
+!
+interface Vlan1
+ no ip address
+!
+interface Vlan192
+ ip address 192.168.1.4 255.255.255.0
+!
+router isis
+ net 49.0000.1010.1128.1002.00
+ domain-password cisco
+ metric-style wide
+ log-adjacency-changes
+ nsf ietf
+ bfd all-interfaces
+!
+ip forward-protocol nd
+ip http server
+ip http secure-server
+ip http client source-interface Loopback0
+ip route vrf Mgmt-vrf 0.0.0.0 0.0.0.0 10.105.14.65
+!
+ip ssh version 2
+!
+ip radius source-interface Loopback0 
+!
+ip sla 1
+ icmp-echo 192.168.1.10 source-ip 10.128.3.1
+ vrf DEFAULT_VN
+ threshold 3
+ip sla schedule 1 life forever start-time now
+ip sla 2
+ icmp-echo 192.168.1.10 source-ip 10.128.3.13
+ vrf CORP_VRF
+ threshold 3
+ip sla schedule 2 life forever start-time now
+ip sla 3
+ icmp-echo 192.168.1.10 source-ip 10.128.3.5
+ threshold 3
+ip sla schedule 3 life forever start-time now
+ip sla 4
+ icmp-echo 192.168.1.10 source-ip 10.128.3.1
+ vrf DEFAULT_VN
+ threshold 3
+ip sla schedule 4 life forever start-time now
+ip sla 5
+ icmp-echo 192.168.1.10 source-ip 10.128.3.13
+ vrf CORP_VRF
+ threshold 3
+ip sla schedule 5 life forever start-time now
+ip sla 6
+ icmp-echo 192.168.1.10 source-ip 10.128.3.5
+ threshold 3
+ip sla schedule 6 life forever start-time now
+!
+snmp-server community public RO
+snmp-server community private RW
+!
+!
+radius-server attribute 6 on-for-login-auth
+radius-server attribute 6 support-multiple
+radius-server attribute 8 include-in-access-req
+radius-server attribute 25 access-request include
+radius-server dead-criteria time 5 tries 3
+radius-server deadtime 30
+!
+radius server dnac-radius_192.168.1.41
+ address ipv4 192.168.1.41 auth-port 1812 acct-port 1813
+ timeout 2
+ retransmit 1
+ pac key cisco
+!
+!
+control-plane
+ service-policy input system-cpp-policy
+!
+!
+line con 0
+ stopbits 1
+line vty 0 4
+ authorization exec VTY_author
+ login authentication VTY_authen
+ transport input all
+ transport output telnet ssh
+line vty 5 97
+ authorization exec VTY_author
+ login authentication VTY_authen
+ transport input all
+!
+!
+wsma agent exec
+!
+wsma agent config
+!
+wsma agent filesys
+!
+wsma agent notify
+!
+!
+end
+
+POD3-C9500-48X-A#
+POD3-C9500-48X-A#
+POD3-C9500-48X-A#more fl
+POD3-C9500-48X-A#more flash:base
+POD3-C9500-48X-A#more flash:base_config
+version 16.6
+no service pad
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no platform punt-keepalive disable-kernel-core
+!
+hostname POD3-C9500-48X-A
+!
+!
+vrf definition Mgmt-vrf
+ !
+ address-family ipv4
+ exit-address-family
+ !
+ address-family ipv6
+ exit-address-family
+!
+enable secret cisco
+!
+no aaa new-model
+boot system switch all flash:cat9k_iosxe.16.06.02.SPA.bin
+switch 1 provision c9500-40x
+!
+!
+username admin privilege 15 password cisco
+username cisco privilege 15 password cisco
+!
+!
+ip routing
+!
+interface GigabitEthernet0/0
+ vrf forwarding Mgmt-vrf
+ ip address 10.105.14.109 255.255.255.192
+ speed 1000
+ negotiation auto
+ !
+ control-plane
+ service-policy input system-cpp-policy
+!
+!
+line con 0
+ stopbits 1
+line vty 0 4
+ login local
+ transport input telnet ssh
+ transport output telnet ssh
+line vty 5 15
+ login
+!
+
+POD3-C9500-48X-A#req plat soft sys shell
+% Error: Shell access is not available
+
+POD3-C9500-48X-A#con ft
+% Ambiguous command:  "con ft"
+POD3-C9500-48X-A#conf t
+Enter configuration commands, one per line.  End with CNTL/Z.
+POD3-C9500-48X-A(config)#plat shell
+POD3-C9500-48X-A(config)#end
+POD3-C9500-48X-A#con ft
+% Ambiguous command:  "con ft"
+POD3-C9500-48X-A#req plat soft sys shell
+Activity within this shell can jeopardize the functioning of the system.
+Are you sure you want to continue? [y/n] y
+Challenge: 7877cda73ff5d772ce6c5116a102326285c20fc4f4276084e493962c8e8b73b6c98f580c1bd0c91fcd48a173ef63ce894f53aa5d6107fca328509233221bb264
+Please enter the shell access response based on the above challenge within 10 mins 
+Press "Enter" when done or to quit 
+7877cda73ff5d772ce6c5116a102326285c20fc4f4276084e493962c8e8b73b6c98f580c1bd0c91foR4JJnG/ORygLbDCVgg4gGtckKdbkTa96KI+lFKMgig78eL65UNWrYVWxjEr6RA/UTMxfOKBD7I9ITgQXElJUVSq8ZHNwPRrkH1enfJKJjq7Eq1aV/GwIJZKkHVdJvO8tx+BOj2pLrZaz4yca5wavepa5Gov/Pbdut4vhW43VLvWU4jmjYhyKTq49YtYt2wnzXkd5uixpJ7nBPup0DUhfUida4/wA7LcJa3bfoZB/h7/jnu3p8nawiPyQsXnqG8gGJlZenawDQCQlR6z5q2iJkQY61U82x4aevd3AEdKyKdmCmK6vwBkOLS3cuC+wUgydq42Tj1L4S5gcyZEFR1nxA==
+Key verified
+2018/03/31 06:16:06 : Shell access was granted to user <anon>; Trace file: , /crashinfo/tracelogs/system_shell_R0-0.29989_0.20180331061606.bin
+********************************************************************** 
+Activity within this shell can jeopardize the functioning 
+of the system.
+Use this functionality only under supervision of Cisco Support.
+
+Session will be logged to:
+  crashinfo:tracelogs/system_shell_R0-0.29989_0.20180331061606.bin
+********************************************************************** 
+[POD3-C9500-48X-A_1_RP_0:/]$ 
+[POD3-C9500-48X-A_1_RP_0:/]$ 
+[POD3-C9500-48X-A_1_RP_0:/]$ cd flash
+[POD3-C9500-48X-A_1_RP_0:/flash]$ ls
+NVRAM                               cat9k_iosxe.16.06.02.SPA.bin
+base_config                         core
+boothelper.log                      dc_profile_dir
+bootloader_evt_handle.log           gs_script
+cat9k-cc_srdriver.16.06.01.SPA.pkg  memleak.tcl
+cat9k-espbase.16.06.01.SPA.pkg      nvram_config
+cat9k-guestshell.16.06.01.SPA.pkg   nvram_config_bkup
+cat9k-rpbase.16.06.01.SPA.pkg       packages.conf
+cat9k-rpboot.16.06.01.SPA.pkg       pnp-tech-discovery-summary
+cat9k-sipbase.16.06.01.SPA.pkg      pnp-tech-time
+cat9k-sipspa.16.06.01.SPA.pkg       private-KS1
+cat9k-srdriver.16.06.01.SPA.pkg     vlan.dat
+cat9k-webui.16.06.01.SPA.pkg
+[POD3-C9500-48X-A_1_RP_0:/flash]$ vi base_config 
+version 16.6
+no service pad
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no platform punt-keepalive disable-kernel-core
+!
+hostname POD3-C9500-48X-A
+!
+!
+vrf definition Mgmt-vrf
+ !
+ address-family ipv4
+ exit-address-family
+ !
+ address-family ipv6
+ exit-address-family
+!
+enable secret cisco
+!
+no aaa new-model
+boot system switch all flash:cat9k_iosxe.16.06.02.SPA.bin
+switch 1 provision c9500-40x
+[POD3-C9500-48X-A_1_RP_0:/flash]$ sudo vi base_config
+bash: sudo: command not found
+[POD3-C9500-48X-A_1_RP_0:/flash]$ vi base_config 
+version 16.6
+no service pad
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no platform punt-keepalive disable-kernel-core
+!
+hostname POD3-C9500-48X-A
+!
+!
+vrf definition Mgmt-vrf
+ !
+ address-family ipv4
+ exit-address-family
+ !
+ address-family ipv6
+ exit-address-family
+!
+enable secret cisco
+!
+no aaa new-model
+boot system switch all flash:cat9k_iosxe.16.06.02.SPA.bin
+switch 1 provision c9500-40x
+[POD3-C9500-48X-A_1_RP_0:/flash]$ vi base_config 
+version 16.6
+no service pad
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no platform punt-keepalive disable-kernel-core
+!
+hostname POD3-C9500-48X-A
+!
+!
+vrf definition Mgmt-vrf
+ !
+ address-family ipv4
+ exit-address-family
+ !
+ address-family ipv6
+ exit-address-family
+!
+enable secret cisco
+!
+no aaa new-model
+boot system switch all flash:cat9k_iosxe.16.06.02.SPA.bin
+switch 1 provision c9500-40x
+version 16.6
+no service pad
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no platform punt-keepalive disable-kernel-core
+!
+hostname POD3-C9500-48X-A
+!
+!
+vrf definition Mgmt-vrf
+ !
+ address-family ipv4
+ exit-address-family
+ !
+ address-family ipv6
+ exit-address-family
+!
+enable secret cisco
+!
+no aaa new-model
+boot system switch all flash:cat9k_iosxe.16.06.02.SPA.bin
+switch 1 provision c9500-40x
+!
+!
+username admin privilege 15 password cisco
+username cisco privilege 15 password cisco
+!
+!
+ip routing
+!
+interface GigabitEthernet0/0
+ vrf forwarding Mgmt-vrf
+ ip address 10.105.14.109 255.255.255.192
+ speed 1000
+ negotiation auto
+ !
+ control-plane
+ service-policy input system-cpp-policy
+!
+!
+ control-plane
+ service-policy input system-cpp-policy
+!
+!
+ip route vrf Mgmt-vrf 0.0.0.0 0.0.0.0 10.105.14.65
+"base_config" 52 lines, 903 characters written

@@ -1,0 +1,1642 @@
+POD3-C9500-48X-A#ter len 0 
+POD3-C9500-48X-A#sh run
+Building configuration...
+
+Current configuration : 14503 bytes
+!
+! Last configuration change at 07:10:13 UTC Sat Mar 31 2018 by admin
+!
+version 16.6
+no service pad
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no platform punt-keepalive disable-kernel-core
+!
+hostname POD3-C9500-48X-A
+!
+!
+vrf definition Alpha
+ rd 1:4099
+ !
+ address-family ipv4
+  route-target export 1:4099
+  route-target import 1:4099
+ exit-address-family
+!
+vrf definition DEFAULT_VN
+ rd 1:4098
+ !
+ address-family ipv4
+  route-target export 1:4098
+  route-target import 1:4098
+ exit-address-family
+!
+vrf definition Mgmt-vrf
+ !
+ address-family ipv4
+ exit-address-family
+ !
+ address-family ipv6
+ exit-address-family
+!
+enable secret 5 $1$2CUs$pCmAUrT1cWh9JsmZEGs8n/
+!
+aaa new-model
+!
+!
+aaa group server radius dnac-network-radius-group
+ server name dnac-radius_192.168.1.41
+ ip radius source-interface Loopback0
+!
+aaa authentication login default local
+aaa authentication login VTY_authen group dnac-network-radius-group local
+aaa authorization exec default none 
+aaa authorization exec VTY_author group dnac-network-radius-group local if-authenticated 
+aaa accounting exec default start-stop group dnac-network-radius-group
+!
+!
+!
+!
+!
+aaa server radius dynamic-author
+ client 192.168.1.41 server-key cisco
+!
+aaa session-id common
+boot system switch all flash:cat9k_iosxe.16.06.02.SPA.bin
+switch 1 provision c9500-40x
+!
+!
+!
+!
+ip routing
+!
+ip name-server 192.168.1.10
+no ip domain lookup
+ip domain name dnac-cisco.com
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+cpp system-default
+!
+crypto pki trustpoint 192.168.1.40
+ enrollment mode ra
+ enrollment terminal
+ usage ssl-client
+ revocation-check crl
+!
+!
+crypto pki certificate chain 192.168.1.40
+ certificate ca 00A1C501C82B0A6F26
+  308202DA 308201C2 A0030201 02020900 A1C501C8 2B0A6F26 300D0609 2A864886 
+  F70D0101 0B050030 12311030 0E060355 04030C07 6B756265 2D636130 1E170D31 
+  38303232 33303732 3835305A 170D3139 30323233 30373238 35305A30 0F310D30 
+  0B060355 04030C04 6B6F6E67 30820122 300D0609 2A864886 F70D0101 01050003 
+  82010F00 3082010A 02820101 00AFC54D 2084EC12 2EA432C8 A4E467FA B7B6E792 
+  14728FD0 B220098E 02041CF6 3CE5374B 3B44F1DA E44EE3D9 A14731B2 D7DA744D 
+  21959AB5 6ED80AF0 00C88AA8 666E5B56 CFEF86CC 8202056F 1E1BB229 C626D76A 
+  EB2AD2A4 A1CC3DF3 F8266150 7AC71736 60E2EEEE 87BFDFA3 EB56B379 408F4FA5 
+  7C303D8F 1E16F817 5971FC21 34E572B6 E1ACB1F1 BEE7B038 459D9847 DB4BD1AC 
+  3F499D5E F3F181AF 0B0682BD 88111E9A 06569C83 0AF57508 4D97E7D9 71EB55D4 
+  F1042698 D5B0A140 7D399510 16F4E5F8 7A3F5C4E 7BA8E209 C44CAFA5 59424FFA 
+  FDF7B650 8FA4DC57 BFCA3653 842CED1A 1B73F1E8 A5D94F9C 270CACBD 3198CDB0 
+  D8086D73 CEE09A12 81C6EE6A 27020301 0001A336 30343009 0603551D 13040230 
+  00300B06 03551D0F 04040302 05E0301A 0603551D 11041330 1182096C 6F63616C 
+  686F7374 8704C0A8 0128300D 06092A86 4886F70D 01010B05 00038201 01008291 
+  A179D7F2 01C6E426 E1C60160 4691962A F2D075FC EB6E9C50 7B0A5281 99C84258 
+  044C6425 6263AF85 3AD52A21 391F79F0 F8558561 64BD2B75 75066371 27F860B5 
+  48A3F598 20F0F8F2 92E0DAB4 767C8091 FF0E47D6 6C125718 55111226 BF4758F6 
+  9F501DB6 3F15FD6C B5330EB6 2A27296B AF8ED326 C883B6FC D317A99F 4D033EB6 
+  1629EC27 6DC64A89 8F35DB03 8DAAB904 3F740C9E 23AFD48F E13A9E2A 41D94133 
+  CFC3A286 F428907C 33A7E556 BA67C24D 17F0C118 7EC5FE93 F02CBE47 D8996EB4 
+  6CF76116 F99003A7 17F2CC1D 1BCF0D91 F077C5B5 7AB5221B 6C035456 5FF0D073 
+  324F3166 DAC8EA91 D6E5D60C B3B08BD8 70E1DAC4 E91226A5 99FA8CAD B84E
+        quit
+!
+diagnostic bootup level minimal
+spanning-tree mode rapid-pvst
+spanning-tree extend system-id
+archive
+ log config
+  logging enable
+  logging size 1000
+dot1x system-auth-control
+!
+username admin privilege 15 password 0 cisco
+username cisco privilege 15 password 0 cisco
+!
+redundancy
+ mode sso
+!
+!
+vlan 3001
+ name 3001
+!
+vlan 3002
+ name 3002
+!
+vlan 3003
+ name 3003
+!
+!
+class-map match-any system-cpp-police-topology-control
+  description Topology control
+class-map match-any system-cpp-police-sw-forward
+  description Sw forwarding, L2 LVX data, LOGGING
+class-map match-any system-cpp-default
+  description DHCP Snooping, EWLC control, EWCL data 
+class-map match-any system-cpp-police-sys-data
+  description Learning cache ovfl, Crypto Control, Exception, EGR Exception, NFL SAMPLED DATA, Gold Pkt, RPF Failed
+class-map match-any system-cpp-police-punt-webauth
+  description Punt Webauth
+class-map match-any system-cpp-police-l2lvx-control
+  description L2 LVX control packets
+class-map match-any system-cpp-police-forus
+  description Forus Address resolution and Forus traffic
+class-map match-any system-cpp-police-multicast-end-station
+  description MCAST END STATION
+class-map match-any system-cpp-police-multicast
+  description Transit Traffic and MCAST Data
+class-map match-any system-cpp-police-l2-control
+  description L2 control
+class-map match-any system-cpp-police-dot1x-auth
+  description DOT1X Auth
+class-map match-any system-cpp-police-data
+  description ICMP redirect, ICMP_GEN and BROADCAST
+class-map match-any system-cpp-police-stackwise-virt-control
+  description Stackwise Virtual
+class-map match-any system-cpp-police-control-low-priority
+  description General punt
+class-map match-any non-client-nrt-class
+class-map match-any system-cpp-police-routing-control
+  description Routing control
+class-map match-any system-cpp-police-protocol-snooping
+  description Protocol snooping
+!
+policy-map system-cpp-policy
+ class system-cpp-police-data
+  police rate 600 pps
+ class system-cpp-police-sys-data
+  police rate 100 pps
+ class system-cpp-police-sw-forward
+  police rate 1000 pps
+ class system-cpp-police-multicast
+  police rate 500 pps
+ class system-cpp-police-multicast-end-station
+  police rate 2000 pps
+ class system-cpp-police-punt-webauth
+  police rate 1000 pps
+ class system-cpp-police-l2-control
+  police rate 2000 pps
+ class system-cpp-police-stackwise-virt-control
+  police rate 8000 pps
+ class system-cpp-police-routing-control
+  police rate 5400 pps
+ class system-cpp-police-control-low-priority
+  police rate 200 pps
+ class system-cpp-police-l2lvx-control
+  police rate 1000 pps
+ class system-cpp-police-topology-control
+  police rate 13000 pps
+ class system-cpp-police-dot1x-auth
+  police rate 1000 pps
+ class system-cpp-police-protocol-snooping
+  police rate 2000 pps
+ class system-cpp-police-forus
+  police rate 1000 pps
+ class system-cpp-default
+  police rate 1000 pps
+!
+! 
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+interface Loopback0
+ description Fabric Node Router ID
+ ip address 10.128.1.1 255.255.255.255
+ ip router isis 
+!
+interface LISP0
+!
+interface LISP0.4097
+!
+interface LISP0.4098
+!
+interface LISP0.4099
+!
+interface GigabitEthernet0/0
+ vrf forwarding Mgmt-vrf
+ ip address 10.105.14.109 255.255.255.192
+ speed 1000
+ negotiation auto
+!
+interface TenGigabitEthernet1/0/1
+!
+interface TenGigabitEthernet1/0/2
+ switchport mode trunk
+!
+interface TenGigabitEthernet1/0/3
+ description Fabric Physical Link
+ no switchport
+ dampening
+ ip address 10.128.2.65 255.255.255.252
+ ip lisp source-locator Loopback0
+ ip router isis 
+ logging event link-status
+ load-interval 30
+ bfd interval 500 min_rx 50 multiplier 3
+ no bfd echo
+ isis network point-to-point 
+!
+interface TenGigabitEthernet1/0/4
+!
+interface TenGigabitEthernet1/0/5
+!
+interface TenGigabitEthernet1/0/6
+!
+interface TenGigabitEthernet1/0/7
+!
+interface TenGigabitEthernet1/0/8
+!
+interface TenGigabitEthernet1/0/9
+!
+interface TenGigabitEthernet1/0/10
+!
+interface TenGigabitEthernet1/0/11
+!
+interface TenGigabitEthernet1/0/12
+!
+interface TenGigabitEthernet1/0/13
+!
+interface TenGigabitEthernet1/0/14
+!
+interface TenGigabitEthernet1/0/15
+!
+interface TenGigabitEthernet1/0/16
+!
+interface TenGigabitEthernet1/0/17
+!
+interface TenGigabitEthernet1/0/18
+!
+interface TenGigabitEthernet1/0/19
+!
+interface TenGigabitEthernet1/0/20
+!
+interface TenGigabitEthernet1/0/21
+!
+interface TenGigabitEthernet1/0/22
+!
+interface TenGigabitEthernet1/0/23
+!
+interface TenGigabitEthernet1/0/24
+!
+interface TenGigabitEthernet1/0/25
+!
+interface TenGigabitEthernet1/0/26
+!
+interface TenGigabitEthernet1/0/27
+!
+interface TenGigabitEthernet1/0/28
+!
+interface TenGigabitEthernet1/0/29
+!
+interface TenGigabitEthernet1/0/30
+!
+interface TenGigabitEthernet1/0/31
+!
+interface TenGigabitEthernet1/0/32
+!
+interface TenGigabitEthernet1/0/33
+!
+interface TenGigabitEthernet1/0/34
+!
+interface TenGigabitEthernet1/0/35
+!
+interface TenGigabitEthernet1/0/36
+!
+interface TenGigabitEthernet1/0/37
+!
+interface TenGigabitEthernet1/0/38
+!
+interface TenGigabitEthernet1/0/39
+!
+interface TenGigabitEthernet1/0/40
+ description Fabric Physical Link
+ no switchport
+ dampening
+ ip address 10.128.2.69 255.255.255.252
+ ip lisp source-locator Loopback0
+ ip router isis 
+ logging event link-status
+ load-interval 30
+ bfd interval 500 min_rx 50 multiplier 3
+ no bfd echo
+ isis network point-to-point 
+!
+interface TenGigabitEthernet1/1/1
+!
+interface TenGigabitEthernet1/1/2
+!
+interface TenGigabitEthernet1/1/3
+!
+interface TenGigabitEthernet1/1/4
+!
+interface TenGigabitEthernet1/1/5
+!
+interface TenGigabitEthernet1/1/6
+!
+interface TenGigabitEthernet1/1/7
+!
+interface TenGigabitEthernet1/1/8
+!
+interface FortyGigabitEthernet1/1/1
+!
+interface FortyGigabitEthernet1/1/2
+!
+interface Vlan1
+ no ip address
+ shutdown
+!
+interface Vlan192
+ ip address 192.168.1.4 255.255.255.0
+!
+interface Vlan3001
+ description vrf interface to External router
+ vrf forwarding DEFAULT_VN
+ ip address 10.128.3.1 255.255.255.252
+ no ip redirects
+ ip route-cache same-interface
+!
+interface Vlan3002
+ description vrf interface to External router
+ ip address 10.128.3.5 255.255.255.252
+ no ip redirects
+ ip route-cache same-interface
+!
+interface Vlan3003
+ description vrf interface to External router
+ vrf forwarding Alpha
+ ip address 10.128.3.9 255.255.255.252
+ no ip redirects
+ ip route-cache same-interface
+!
+router lisp
+ locator-table default
+ locator-set rloc_0f227a88-7560-4722-bcd9-3ab7a8f6ff71
+  IPv4-interface Loopback0 priority 10 weight 10
+  auto-discover-rlocs
+  exit-locator-set
+ !
+ service ipv4
+  encapsulation vxlan
+  map-cache-limit 25000
+  database-mapping limit dynamic 5000
+  itr map-resolver 10.128.1.1
+  etr map-server 10.128.1.1 key uci
+  etr map-server 10.128.1.1 proxy-reply
+  etr
+  sgt
+  proxy-etr
+  proxy-itr 10.128.1.1
+  map-server
+  map-resolver
+  exit-service-ipv4
+ !
+ service ethernet
+  map-server
+  map-resolver
+  exit-service-ethernet
+ !
+ instance-id 4097
+  remote-rloc-probe on-route-change
+  service ipv4
+   eid-table default
+   route-export site-registrations
+   distance site-registrations 250
+   map-cache site-registration
+   exit-service-ipv4
+  !
+  exit-instance-id
+ !
+ instance-id 4098
+  remote-rloc-probe on-route-change
+  service ipv4
+   eid-table vrf DEFAULT_VN
+   route-import database bgp 65001 route-map database locator-set rloc_0f227a88-7560-4722-bcd9-3ab7a8f6ff71
+   route-export site-registrations
+   distance site-registrations 250
+   map-cache site-registration
+   exit-service-ipv4
+  !
+  exit-instance-id
+ !
+ instance-id 4099
+  remote-rloc-probe on-route-change
+  service ipv4
+   eid-table vrf Alpha
+   route-import database bgp 65001 route-map database locator-set rloc_0f227a88-7560-4722-bcd9-3ab7a8f6ff71
+   route-export site-registrations
+   distance site-registrations 250
+   map-cache site-registration
+   exit-service-ipv4
+  !
+  exit-instance-id
+ !
+ map-server nmr non-site-ttl 1440
+ site site_uci
+  description map-server configured from apic-em
+  authentication-key uci
+  eid-record instance-id 4097 0.0.0.0/0 accept-more-specifics
+  eid-record instance-id 4098 0.0.0.0/0 accept-more-specifics
+  eid-record instance-id 4099 0.0.0.0/0 accept-more-specifics
+  exit-site
+ !
+ ipv4 locator reachability exclude-default
+ exit-router-lisp
+!
+router isis
+ net 49.0000.1010.1128.1002.00
+ domain-password cisco
+ metric-style wide
+ log-adjacency-changes
+ nsf ietf
+ bfd all-interfaces
+!
+router bgp 65001
+ bgp router-id interface Loopback0
+ bgp log-neighbor-changes
+ neighbor 10.128.3.6 remote-as 65002
+ neighbor 10.128.3.6 update-source Vlan3002
+ !
+ address-family ipv4
+  network 10.128.1.1 mask 255.255.255.255
+  redistribute lisp metric 10
+  neighbor 10.128.3.6 activate
+  neighbor 10.128.3.6 weight 65535
+ exit-address-family
+ !
+ address-family ipv4 vrf Alpha
+  redistribute lisp metric 10
+  neighbor 10.128.3.10 remote-as 65002
+  neighbor 10.128.3.10 update-source Vlan3003
+  neighbor 10.128.3.10 activate
+  neighbor 10.128.3.10 weight 65535
+ exit-address-family
+ !
+ address-family ipv4 vrf DEFAULT_VN
+  redistribute lisp metric 10
+  neighbor 10.128.3.2 remote-as 65002
+  neighbor 10.128.3.2 update-source Vlan3001
+  neighbor 10.128.3.2 activate
+  neighbor 10.128.3.2 weight 65535
+ exit-address-family
+!
+ip forward-protocol nd
+ip http server
+ip http secure-server
+ip http client source-interface Loopback0
+ip route vrf Mgmt-vrf 0.0.0.0 0.0.0.0 10.105.14.65
+!
+!
+!
+ip prefix-list deny_0.0.0.0 seq 10 permit 0.0.0.0/0
+ip radius source-interface Loopback0 
+!
+ip sla 2
+ icmp-echo 192.168.1.10 source-ip 10.128.3.5
+ vrf DEFAULT_VN
+ threshold 3
+ip sla schedule 2 life forever start-time now
+ip sla 4
+ icmp-echo 192.168.1.10 source-ip 10.128.3.9
+ threshold 3
+ip sla schedule 4 life forever start-time now
+ip sla 6
+ icmp-echo 192.168.1.10 source-ip 10.128.3.17
+ vrf CORP_VRF
+ threshold 3
+ip sla schedule 6 life forever start-time now
+ip sla 7
+ icmp-echo 192.168.1.10 source-ip 10.128.3.1
+ vrf DEFAULT_VN
+ threshold 3
+ip sla schedule 7 life forever start-time now
+ip sla 8
+ icmp-echo 192.168.1.10 source-ip 10.128.3.5
+ threshold 3
+ip sla schedule 8 life forever start-time now
+ip sla 9
+ icmp-echo 192.168.1.10 source-ip 10.128.3.9
+ vrf Alpha
+ threshold 3
+ip sla schedule 9 life forever start-time now
+!
+route-map database deny 15 
+ match ip address prefix-list deny_0.0.0.0
+!
+route-map database permit 20 
+!
+snmp-server community public RO
+snmp-server community private RW
+!
+!
+radius-server attribute 6 on-for-login-auth
+radius-server attribute 6 support-multiple
+radius-server attribute 8 include-in-access-req
+radius-server attribute 25 access-request include
+radius-server dead-criteria time 5 tries 3
+radius-server deadtime 30
+!
+radius server dnac-radius_192.168.1.41
+ address ipv4 192.168.1.41 auth-port 1812 acct-port 1813
+ timeout 2
+ retransmit 1
+ pac key cisco
+!
+!
+control-plane
+ service-policy input system-cpp-policy
+!
+!
+line con 0
+ stopbits 1
+line vty 0 4
+ authorization exec VTY_author
+ login authentication VTY_authen
+ transport input all
+ transport output telnet ssh
+line vty 5 97
+ authorization exec VTY_author
+ login authentication VTY_authen
+ transport input all
+!
+!
+wsma agent exec
+!
+wsma agent config
+!
+wsma agent filesys
+!
+wsma agent notify
+!
+!
+end
+
+POD3-C9500-48X-A#
+POD3-C9500-48X-A#
+POD3-C9500-48X-A#ter len 25
+POD3-C9500-48X-A#
+POD3-C9500-48X-A#
+POD3-C9500-48X-A#wr
+Building configuration...
+[OK]
+POD3-C9500-48X-A#
+POD3-C9500-48X-A#
+POD3-C9500-48X-A#sh archi
+POD3-C9500-48X-A#sh archive log con
+POD3-C9500-48X-A#sh archive log config all
+ idx   sess           user@line      Logged command
+    1     1          admin@vty0     |  logging enable 
+    2     1          admin@vty0     |  logging size 1000
+    3     0          admin@vty16    |!exec: enable
+    4     2          admin@vty16    |no vrf definition DEFAULT_VN 
+    5     2          admin@vty16    |no vrf definition CORP_VRF 
+    6     2          admin@vty16    |no vrf definition Shared_user 
+    7     2          admin@vty16    |interface TenGigabitEthernet1/0/4 
+    8     2          admin@vty16    | no load-interval 
+    9     2          admin@vty16    | no spanning-tree portfast 
+   10     2          admin@vty16    | no switchport trunk native vlan 
+   11     2          admin@vty16    | switchport 
+   12     2          admin@vty16    | switchport mode dynamic auto 
+   13     2          admin@vty16    | switchport access vlan 1
+   14     2          admin@vty16    | exit 
+   15     4          admin@vty16    |no ip sla 7
+   16     6          admin@vty16    |vrf definition DEFAULT_VN
+   17     6          admin@vty16    | rd 1:4098 
+   18     6          admin@vty16    | address-family ipv4 
+   19     6          admin@vty16    |  route-target import 1:4098 
+   20     6          admin@vty16    |  route-target export 1:4098 
+   21     6          admin@vty16    |  vrf definition CORP_VRF
+   22     6          admin@vty16    | rd 1:0 
+   23     6          admin@vty16    | address-family ipv4 
+ idx   sess           user@line      Logged command
+
+   24     6          admin@vty16    |  route-target import 1:0 
+   25     6          admin@vty16    |  route-target export 1:0 
+   26     6          admin@vty16    |  vrf definition Shared_user
+   27     6          admin@vty16    | rd 1:0 
+   28     0          admin@vty17    |!exec: enable
+   29     0          admin@vty16    |!exec: enable
+   30     8          admin@vty16    |ip sla 7
+   31     8          admin@vty16    | icmp-echo 192.168.1.10 source-ip 10.128.3.1
+   32     8          admin@vty16    |  frequency 60
+   33     8          admin@vty16    |  threshold 3
+   34     8          admin@vty16    |  timeout 5000
+   35     8          admin@vty16    |  vrf DEFAULT_VN
+   36     8          admin@vty16    |  ip sla schedule 7  life forever start-time now 
+   37    10          admin@vty16    |interface TenGigabitEthernet1/0/4 
+   38    10          admin@vty16    | no load-interval 
+   39    10          admin@vty16    | no spanning-tree portfast 
+   40    10          admin@vty16    | no switchport trunk native vlan 
+   41    10          admin@vty16    | switchport 
+   42    10          admin@vty16    | switchport mode dynamic auto 
+   43    10          admin@vty16    | switchport access vlan 1
+   44    10          admin@vty16    | exit 
+ idx   sess           user@line      Logged command
+
+   45    12          admin@vty16    |no ip sla 7
+   46    14          admin@vty0     |no vrf definition Shared_user 
+   47    14          admin@vty0     |no vrf definition DEFAULT_VN 
+   48    14          admin@vty0     |no vrf definition CORP_VRF 
+   49    15          admin@vty16    |no ip domain-lookup 
+   50    15          admin@vty16    |ip tacacs source-interface Loopback0 
+   51    15          admin@vty16    |ip radius source-interface Loopback0 
+   52    15          admin@vty16    |aaa authorization exec VTY_author group dnac-network-radius-group local if-authenticated 
+   53    15          admin@vty16    |radius-server vsa send authentication 
+   54    15          admin@vty16    |radius-server vsa send accounting 
+   55    15          admin@vty16    |line vty 0 97
+   56    15          admin@vty16    | login authentication VTY_authen
+   57    15          admin@vty16    | authorization exec VTY_author
+   58    15          admin@vty16    | transport input all 
+   59    15          admin@vty16    | exit 
+   60    17          admin@vty16    |vrf definition DEFAULT_VN
+   61    17          admin@vty16    | rd 1:4098 
+   62    17          admin@vty16    | address-family ipv4 
+   63    17          admin@vty16    |  route-target import 1:4098 
+   64    17          admin@vty16    |  route-target export 1:4098 
+   65    17          admin@vty16    |  vrf definition CORP_VRF
+   66    17          admin@vty16    | rd 1:0 
+ idx   sess           user@line      Logged command
+
+   67    17          admin@vty16    | address-family ipv4 
+   68    17          admin@vty16    |  route-target import 1:0 
+   69    17          admin@vty16    |  route-target export 1:0 
+   70    17          admin@vty16    |  vrf definition Shared_user
+   71    17          admin@vty16    | rd 1:0 
+   72     0          admin@vty1     |!exec: enable
+   73     0          admin@vty1     |!exec: enable
+   74    19          admin@vty1     |ip sla 7
+   75    19          admin@vty1     | icmp-echo 192.168.1.10 source-ip 10.128.3.1
+   76    19          admin@vty1     |  frequency 60
+   77    19          admin@vty1     |  threshold 3
+   78    19          admin@vty1     |  timeout 5000
+   79    19          admin@vty1     |  vrf DEFAULT_VN
+   80    19          admin@vty1     |  ip sla schedule 7  life forever start-time now 
+   81     0          admin@vty2     |!exec: enable
+   82    22          admin@vty2     |vrf definition Test
+   83    22          admin@vty2     | rd 1:4099 
+   84    22          admin@vty2     | address-family ipv4 
+   85    22          admin@vty2     |  route-target import 1:4099 
+   86    22          admin@vty2     |  route-target export 1:4099 
+   87    22          admin@vty2     |  vlan 3001
+ idx   sess           user@line      Logged command
+
+   88    22          admin@vty2     | name 3001
+   89    22          admin@vty2     | exit 
+   90    22          admin@vty2     |interface Vlan3001 
+   91    22          admin@vty2     | no shutdown 
+   92    22          admin@vty2     | no ip redirects 
+   93    22          admin@vty2     | description vrf interface to External router
+   94    22          admin@vty2     | vrf forwarding DEFAULT_VN 
+   95    22          admin@vty2     | ip address 10.128.3.1 255.255.255.252
+   96    22          admin@vty2     | ip route-cache same-interface 
+   97    22          admin@vty2     | exit 
+   98    22          admin@vty2     |router bgp 65001 
+   99    22          admin@vty2     | bgp router-id interface Loopback0 
+  100    22          admin@vty2     | address-family ipv4 vrf DEFAULT_VN
+  101    22          admin@vty2     |  neighbor 10.128.3.2 remote-as 65002
+  102    22          admin@vty2     |  neighbor 10.128.3.2 activate 
+  103    22          admin@vty2     |  neighbor 10.128.3.2 update-source Vlan3001 
+  104    22          admin@vty2     |  neighbor 10.128.3.2 weight 65535
+  105    22          admin@vty2     |  redistribute lisp  metric 10
+  106    22          admin@vty2     |  address-family ipv4 
+  107    22          admin@vty2     |  redistribute lisp  metric 10
+  108    22          admin@vty2     |  network 10.128.1.1 mask 255.255.255.255
+ idx   sess           user@line      Logged command
+
+  109    22          admin@vty2     |  address-family ipv4 vrf Test
+  110    22          admin@vty2     |  redistribute lisp  metric 10
+  111    22          admin@vty2     |  router lisp 
+  112    22          admin@vty2     | locator-set rloc_0f227a88-7560-4722-bcd9-3ab7a8f6ff71
+  113    22          admin@vty2     |  IPv4-interface Loopback0 priority 10 weight 10
+  114    22          admin@vty2     |  auto-discover-rlocs 
+  115    22          admin@vty2     |  exit 
+  116    22          admin@vty2     |   map-server nmr non-site-ttl 1440
+  117    22          admin@vty2     | locator-table default 
+  118    22          admin@vty2     | service ipv4 
+  119    22          admin@vty2     |  encapsulation vxlan 
+  120    22          admin@vty2     |  database-mapping limit dynamic 5000
+  121    22          admin@vty2     |  map-cache-limit 25000
+  122    22          admin@vty2     |  itr map-resolver 10.128.1.1
+  123    22          admin@vty2     |  proxy-itr 10.128.1.1
+  124    22          admin@vty2     |  etr map-server 10.128.1.1 key uci
+  125    22          admin@vty2     |  etr map-server 10.128.1.1 proxy-reply 
+  126    22          admin@vty2     |  etr 
+  127    22          admin@vty2     |  proxy-etr 
+  128    22          admin@vty2     |  map-server 
+  129    22          admin@vty2     |  map-resolver 
+ idx   sess           user@line      Logged command
+
+  130    22          admin@vty2     |  sgt 
+  131    22          admin@vty2     |  exit 
+  132    22          admin@vty2     |   service ethernet 
+  133    22          admin@vty2     |  map-server 
+  134    22          admin@vty2     |  map-resolver 
+  135    22          admin@vty2     |  instance-id 4097
+  136    22          admin@vty2     |  service ipv4 
+  137    22          admin@vty2     |   eid-table default 
+  138    22          admin@vty2     |   route-export site-registrations 
+  139    22          admin@vty2     |   distance site-registrations 250
+  140    22          admin@vty2     |   map-cache site-registration 
+  141    22          admin@vty2     |   exit 
+  142    22          admin@vty2     |    remote-rloc-probe on-route-change 
+  143    22          admin@vty2     |  instance-id 4098
+  144    22          admin@vty2     |  service ipv4 
+  145    22          admin@vty2     |   eid-table vrf DEFAULT_VN
+  146    22          admin@vty2     |   route-export site-registrations 
+  147    22          admin@vty2     |   distance site-registrations 250
+  148    22          admin@vty2     |   map-cache site-registration 
+  149    22          admin@vty2     |   exit 
+  150    22          admin@vty2     |    remote-rloc-probe on-route-change 
+  151    22          admin@vty2     |  instance-id 4099
+  152    22          admin@vty2     |  service ipv4 
+ idx   sess           user@line      Logged command
+
+  153    22          admin@vty2     |   eid-table vrf Test
+  154    22          admin@vty2     |   route-export site-registrations 
+  155    22          admin@vty2     |   distance site-registrations 250
+  156    22          admin@vty2     |   map-cache site-registration 
+  157    22          admin@vty2     |   exit 
+  158    22          admin@vty2     |    remote-rloc-probe on-route-change 
+  159    22          admin@vty2     |  site site_uci
+  160    22          admin@vty2     |  description map-server configured from apic-em
+  161    22          admin@vty2     |  authentication-key uci
+  162    22          admin@vty2     |  exit 
+  163    22          admin@vty2     |   ipv4 locator reachability exclude-default 
+  164    22          admin@vty2     | exit 
+  165    24          admin@vty2     |no vrf definition Test 
+  166    24          admin@vty2     |interface Vlan3001 
+  167    24          admin@vty2     | no shutdown 
+  168    24          admin@vty2     | description vrf interface to External router
+  169    24          admin@vty2     | exit 
+  170    24          admin@vty2     |router bgp 65001 
+  171    24          admin@vty2     | no address-family ipv4 vrf Test
+  172    24          admin@vty2     | router lisp 
+ idx   sess           user@line      Logged command
+
+  173    24          admin@vty2     | no instance-id 4099
+  174    24          admin@vty2     | instance-id 4097
+  175    24          admin@vty2     |  service ipv4 
+  176    24          admin@vty2     |   map-cache site-registration 
+  177    24          admin@vty2     |   exit 
+  178    24          admin@vty2     |    instance-id 4098
+  179    24          admin@vty2     |  service ipv4 
+  180    24          admin@vty2     |   map-cache site-registration 
+  181    24          admin@vty2     |   exit 
+  182    24          admin@vty2     |    exit 
+  183    24          admin@vty2     |   exit 
+  184    26          admin@vty2     |no vlan 3001
+  185    26          admin@vty2     |no router lisp 
+  186    26          admin@vty2     |no router bgp 65001 
+  187    26          admin@vty2     |no interface Vlan3001 
+  188    26          admin@vty2     |no vrf definition DEFAULT_VN 
+  189    26          admin@vty2     |interface TenGigabitEthernet1/0/2 
+  190    26          admin@vty2     | no load-interval 
+  191    26          admin@vty2     | no spanning-tree portfast 
+  192    26          admin@vty2     | no switchport trunk native vlan 
+  193    26          admin@vty2     | switchport 
+  194    26          admin@vty2     | switchport mode dynamic auto 
+  195    26          admin@vty2     | switchport access vlan 1
+ idx   sess           user@line      Logged command
+
+  196    26          admin@vty2     | exit 
+  197    28          admin@vty2     |no ip sla 7
+  198     0          admin@vty1     |!exec: enable
+  199     0          admin@vty3     |!exec: enable
+  200     0          admin@vty1     |!exec: enable
+  201    30          admin@vty0     |no vrf definition CORP_VRF 
+  202     0          admin@vty1     |!exec: enable
+  203    31          admin@vty1     |vrf definition DEFAULT_VN
+  204    31          admin@vty1     | rd 1:4098 
+  205    31          admin@vty1     | address-family ipv4 
+  206    31          admin@vty1     |  route-target import 1:4098 
+  207    31          admin@vty1     |  route-target export 1:4098 
+  208    31          admin@vty1     |  vlan 3001
+  209    31          admin@vty1     | name 3001
+  210    31          admin@vty1     | exit 
+  211    31          admin@vty1     |vlan 3002
+  212    31          admin@vty1     | name 3002
+  213    31          admin@vty1     | exit 
+  214    31          admin@vty1     |interface TenGigabitEthernet1/0/2 
+  215    31          admin@vty1     | switchport 
+  216    31          admin@vty1     | switchport mode trunk 
+  217    31          admin@vty1     | exit 
+  218    31          admin@vty1     |interface Vlan3001 
+ idx   sess           user@line      Logged command
+
+  219    31          admin@vty1     | no shutdown 
+  220    31          admin@vty1     | no ip redirects 
+  221    31          admin@vty1     | description vrf interface to External router
+  222    31          admin@vty1     | vrf forwarding DEFAULT_VN 
+  223    31          admin@vty1     | ip address 10.128.3.1 255.255.255.252
+  224    31          admin@vty1     | ip route-cache same-interface 
+  225    31          admin@vty1     | exit 
+  226    31          admin@vty1     |interface Vlan3002 
+  227    31          admin@vty1     | no shutdown 
+  228    31          admin@vty1     | no ip redirects 
+  229    31          admin@vty1     | description vrf interface to External router
+  230    31          admin@vty1     | ip address 10.128.3.5 255.255.255.252
+  231    31          admin@vty1     | ip route-cache same-interface 
+  232    31          admin@vty1     | exit 
+  233    31          admin@vty1     |router bgp 65001 
+  234    31          admin@vty1     | bgp router-id interface Loopback0 
+  235    31          admin@vty1     | neighbor 10.128.3.6 remote-as 65002
+  236    31          admin@vty1     | neighbor 10.128.3.6 update-source Vlan3002 
+  237    31          admin@vty1     | address-family ipv4 vrf DEFAULT_VN
+  238    31          admin@vty1     |  neighbor 10.128.3.2 remote-as 65002
+ idx   sess           user@line      Logged command
+
+  239    31          admin@vty1     |  neighbor 10.128.3.2 activate 
+  240    31          admin@vty1     |  neighbor 10.128.3.2 update-source Vlan3001 
+  241    31          admin@vty1     |  neighbor 10.128.3.2 weight 65535
+  242    31          admin@vty1     |  redistribute lisp  metric 10
+  243    31          admin@vty1     |  address-family ipv4 
+  244    31          admin@vty1     |  neighbor 10.128.3.6 activate 
+  245    31          admin@vty1     |  neighbor 10.128.3.6 weight 65535
+  246    31          admin@vty1     |  redistribute lisp  metric 10
+  247    31          admin@vty1     |  network 10.128.1.1 mask 255.255.255.255
+  248    31          admin@vty1     |  router lisp 
+  249    31          admin@vty1     | locator-set rloc_0f227a88-7560-4722-bcd9-3ab7a8f6ff71
+  250    31          admin@vty1     |  IPv4-interface Loopback0 priority 10 weight 10
+  251    31          admin@vty1     |  auto-discover-rlocs 
+  252    31          admin@vty1     |  exit 
+  253    31          admin@vty1     |   map-server nmr non-site-ttl 1440
+  254    31          admin@vty1     | locator-table default 
+  255    31          admin@vty1     | service ipv4 
+  256    31          admin@vty1     |  encapsulation vxlan 
+  257    31          admin@vty1     |  database-mapping limit dynamic 5000
+  258    31          admin@vty1     |  map-cache-limit 25000
+ idx   sess           user@line      Logged command
+
+  259    31          admin@vty1     |  itr map-resolver 10.128.1.1
+  260    31          admin@vty1     |  proxy-itr 10.128.1.1
+  261    31          admin@vty1     |  etr map-server 10.128.1.1 key uci
+  262    31          admin@vty1     |  etr map-server 10.128.1.1 proxy-reply 
+  263    31          admin@vty1     |  etr 
+  264    31          admin@vty1     |  proxy-etr 
+  265    31          admin@vty1     |  map-server 
+  266    31          admin@vty1     |  map-resolver 
+  267    31          admin@vty1     |  sgt 
+  268    31          admin@vty1     |  exit 
+  269    31          admin@vty1     |   service ethernet 
+  270    31          admin@vty1     |  map-server 
+  271    31          admin@vty1     |  map-resolver 
+  272    31          admin@vty1     |  instance-id 4098
+  273    31          admin@vty1     |  service ipv4 
+  274    31          admin@vty1     |   eid-table vrf DEFAULT_VN
+  275    31          admin@vty1     |   route-export site-registrations 
+  276    31          admin@vty1     |   route-import database bgp 65001  route-map database locator-set rloc_0f227a88-7560-4722-bcd9-3ab7a8f6ff71 
+  277    31          admin@vty1     |   distance site-registrations 250
+  278    31          admin@vty1     |   map-cache site-registration 
+  279    31          admin@vty1     |   exit 
+  280    31          admin@vty1     |    remote-rloc-probe on-route-change 
+ idx   sess           user@line      Logged command
+
+  281    31          admin@vty1     |  instance-id 4097
+  282    31          admin@vty1     |  service ipv4 
+  283    31          admin@vty1     |   eid-table default 
+  284    31          admin@vty1     |   route-export site-registrations 
+  285    31          admin@vty1     |   distance site-registrations 250
+  286    31          admin@vty1     |   map-cache site-registration 
+  287    31          admin@vty1     |   exit 
+  288    31          admin@vty1     |    remote-rloc-probe on-route-change 
+  289    31          admin@vty1     |  site site_uci
+  290    31          admin@vty1     |  description map-server configured from apic-em
+  291    31          admin@vty1     |  authentication-key uci
+  292    31          admin@vty1     |  eid-record instance-id 4098 0.0.0.0/0  accept-more-specifics 
+  293    31          admin@vty1     |  eid-record instance-id 4097 0.0.0.0/0  accept-more-specifics 
+  294    31          admin@vty1     |  exit 
+  295    31          admin@vty1     |   ipv4 locator reachability exclude-default 
+  296    31          admin@vty1     | ip prefix-list deny_0.0.0.0 seq 10 permit 0.0.0.0/0 
+  297    31          admin@vty1     |route-map database permit 20
+  298    31          admin@vty1     | route-map database deny 15
+ idx   sess           user@line      Logged command
+
+  299    31          admin@vty1     | match ip address prefix-list deny_0.0.0.0
+  300    31          admin@vty1     | exit 
+  301    33          admin@vty1     |ip sla 7
+  302    33          admin@vty1     | icmp-echo 192.168.1.10 source-ip 10.128.3.1
+  303    33          admin@vty1     |  frequency 60
+  304    33          admin@vty1     |  threshold 3
+  305    33          admin@vty1     |  timeout 5000
+  306    33          admin@vty1     |  vrf DEFAULT_VN
+  307    33          admin@vty1     |  ip sla schedule 7  life forever start-time now 
+  308    35          admin@vty1     |ip sla 8
+  309    35          admin@vty1     | icmp-echo 192.168.1.10 source-ip 10.128.3.5
+  310    35          admin@vty1     |  frequency 60
+  311    35          admin@vty1     |  threshold 3
+  312    35          admin@vty1     |  timeout 5000
+  313    35          admin@vty1     |  ip sla schedule 8  life forever start-time now 
+  314    37          admin@vty0     |no vrf definition Shared_user 
+  315     0          admin@vty1     |!exec: enable
+  316    38          admin@vty1     |vrf definition Alpha
+  317    38          admin@vty1     | rd 1:4099 
+ idx   sess           user@line      Logged command
+
+  318    38          admin@vty1     | address-family ipv4 
+  319    38          admin@vty1     |  route-target import 1:4099 
+  320    38          admin@vty1     |  route-target export 1:4099 
+  321    38          admin@vty1     |  interface Vlan3001 
+  322    38          admin@vty1     | no shutdown 
+  323    38          admin@vty1     | description vrf interface to External router
+  324    38          admin@vty1     | exit 
+  325    38          admin@vty1     |interface Vlan3002 
+  326    38          admin@vty1     | no shutdown 
+  327    38          admin@vty1     | description vrf interface to External router
+  328    38          admin@vty1     | exit 
+  329    38          admin@vty1     |router bgp 65001 
+  330    38          admin@vty1     | address-family ipv4 vrf Alpha
+  331    38          admin@vty1     |  redistribute lisp  metric 10
+  332    38          admin@vty1     |  router lisp 
+  333    38          admin@vty1     | instance-id 4097
+  334    38          admin@vty1     |  service ipv4 
+  335    38          admin@vty1     |   map-cache site-registration 
+  336    38          admin@vty1     |   exit 
+  337    38          admin@vty1     |    instance-id 4098
+  338    38          admin@vty1     |  service ipv4 
+ idx   sess           user@line      Logged command
+
+  339    38          admin@vty1     |   map-cache site-registration 
+  340    38          admin@vty1     |   exit 
+  341    38          admin@vty1     |    instance-id 4099
+  342    38          admin@vty1     |  service ipv4 
+  343    38          admin@vty1     |   eid-table vrf Alpha
+  344    38          admin@vty1     |   route-export site-registrations 
+  345    38          admin@vty1     |   route-import database bgp 65001  route-map database locator-set rloc_0f227a88-7560-4722-bcd9-3ab7a8f6ff71 
+  346    38          admin@vty1     |   distance site-registrations 250
+  347    38          admin@vty1     |   map-cache site-registration 
+  348    38          admin@vty1     |   exit 
+  349    38          admin@vty1     |    remote-rloc-probe on-route-change 
+  350    38          admin@vty1     |  site site_uci 
+  351    38          admin@vty1     |  eid-record instance-id 4099 0.0.0.0/0  accept-more-specifics 
+  352    38          admin@vty1     |  exit 
+  353    38          admin@vty1     |   exit 
+  354    40          admin@vty1     |vlan 3003
+  355    40          admin@vty1     | name 3003
+  356    40          admin@vty1     | exit 
+  357    40          admin@vty1     |interface Vlan3001 
+  358    40          admin@vty1     | no shutdown 
+  359    40          admin@vty1     | description vrf interface to External router
+ idx   sess           user@line      Logged command
+
+  360    40          admin@vty1     | exit 
+  361    40          admin@vty1     |interface Vlan3002 
+  362    40          admin@vty1     | no shutdown 
+  363    40          admin@vty1     | description vrf interface to External router
+  364    40          admin@vty1     | exit 
+  365    40          admin@vty1     |interface Vlan3003 
+  366    40          admin@vty1     | no shutdown 
+  367    40          admin@vty1     | no ip redirects 
+  368    40          admin@vty1     | description vrf interface to External router
+  369    40          admin@vty1     | vrf forwarding Alpha 
+  370    40          admin@vty1     | ip address 10.128.3.9 255.255.255.252
+  371    40          admin@vty1     | ip route-cache same-interface 
+  372    40          admin@vty1     | exit 
+  373    40          admin@vty1     |router bgp 65001 
+  374    40          admin@vty1     | address-family ipv4 vrf Alpha
+  375    40          admin@vty1     |  neighbor 10.128.3.10 remote-as 65002
+  376    40          admin@vty1     |  neighbor 10.128.3.10 activate 
+  377    40          admin@vty1     |  neighbor 10.128.3.10 update-source Vlan3003 
+  378    40          admin@vty1     |  neighbor 10.128.3.10 weight 65535
+  379    40          admin@vty1     |  router lisp 
+ idx   sess           user@line      Logged command
+
+  380    40          admin@vty1     | instance-id 4097
+  381    40          admin@vty1     |  service ipv4 
+  382    40          admin@vty1     |   map-cache site-registration 
+  383    40          admin@vty1     |   exit 
+  384    40          admin@vty1     |    instance-id 4098
+  385    40          admin@vty1     |  service ipv4 
+  386    40          admin@vty1     |   map-cache site-registration 
+  387    40          admin@vty1     |   exit 
+  388    40          admin@vty1     |    instance-id 4099
+  389    40          admin@vty1     |  service ipv4 
+  390    40          admin@vty1     |   map-cache site-registration 
+  391    40          admin@vty1     |   exit 
+  392    40          admin@vty1     |    exit 
+  393    40          admin@vty1     |   exit 
+  394    42          admin@vty1     |ip sla 9
+  395    42          admin@vty1     | icmp-echo 192.168.1.10 source-ip 10.128.3.9
+  396    42          admin@vty1     |  frequency 60
+  397    42          admin@vty1     |  threshold 3
+  398    42          admin@vty1     |  timeout 5000
+  399    42          admin@vty1     |  vrf Alpha
+  400    42          admin@vty1     |  ip sla schedule 9  life forever start-time now 
+ idx   sess           user@line      Logged command
+
+  401    44          admin@vty1     |vrf definition Beta
+  402    44          admin@vty1     | rd 1:4100 
+  403    44          admin@vty1     | address-family ipv4 
+  404    44          admin@vty1     |  route-target import 1:4100 
+  405    44          admin@vty1     |  route-target export 1:4100 
+  406    44          admin@vty1     |  interface Vlan3001 
+  407    44          admin@vty1     | no shutdown 
+  408    44          admin@vty1     | description vrf interface to External router
+  409    44          admin@vty1     | exit 
+  410    44          admin@vty1     |interface Vlan3002 
+  411    44          admin@vty1     | no shutdown 
+  412    44          admin@vty1     | description vrf interface to External router
+  413    44          admin@vty1     | exit 
+  414    44          admin@vty1     |interface Vlan3003 
+  415    44          admin@vty1     | no shutdown 
+  416    44          admin@vty1     | description vrf interface to External router
+  417    44          admin@vty1     | exit 
+  418    44          admin@vty1     |router bgp 65001 
+  419    44          admin@vty1     | address-family ipv4 vrf Beta
+  420    44          admin@vty1     |  redistribute lisp  metric 10
+ idx   sess           user@line      Logged command
+
+  421    44          admin@vty1     |  router lisp 
+  422    44          admin@vty1     | instance-id 4097
+  423    44          admin@vty1     |  service ipv4 
+  424    44          admin@vty1     |   map-cache site-registration 
+  425    44          admin@vty1     |   exit 
+  426    44          admin@vty1     |    instance-id 4098
+  427    44          admin@vty1     |  service ipv4 
+  428    44          admin@vty1     |   map-cache site-registration 
+  429    44          admin@vty1     |   exit 
+  430    44          admin@vty1     |    instance-id 4099
+  431    44          admin@vty1     |  service ipv4 
+  432    44          admin@vty1     |   map-cache site-registration 
+  433    44          admin@vty1     |   exit 
+  434    44          admin@vty1     |    instance-id 4100
+  435    44          admin@vty1     |  service ipv4 
+  436    44          admin@vty1     |   eid-table vrf Beta
+  437    44          admin@vty1     |   route-export site-registrations 
+  438    44          admin@vty1     |   route-import database bgp 65001  route-map database locator-set rloc_0f227a88-7560-4722-bcd9-3ab7a8f6ff71 
+  439    44          admin@vty1     |   distance site-registrations 250
+  440    44          admin@vty1     |   map-cache site-registration 
+  441    44          admin@vty1     |   exit 
+  442    44          admin@vty1     |    remote-rloc-probe on-route-change 
+ idx   sess           user@line      Logged command
+
+  443    44          admin@vty1     |  site site_uci 
+  444    44          admin@vty1     |  eid-record instance-id 4100 0.0.0.0/0  accept-more-specifics 
+  445    44          admin@vty1     |  exit 
+  446    44          admin@vty1     |   exit 
+  447    46          admin@vty1     |vrf definition Cappa
+  448    46          admin@vty1     | rd 1:4101 
+  449    46          admin@vty1     | address-family ipv4 
+  450    46          admin@vty1     |  route-target import 1:4101 
+  451    46          admin@vty1     |  route-target export 1:4101 
+  452    46          admin@vty1     |  interface Vlan3001 
+  453    46          admin@vty1     | no shutdown 
+  454    46          admin@vty1     | description vrf interface to External router
+  455    46          admin@vty1     | exit 
+  456    46          admin@vty1     |interface Vlan3002 
+  457    46          admin@vty1     | no shutdown 
+  458    46          admin@vty1     | description vrf interface to External router
+  459    46          admin@vty1     | exit 
+  460    46          admin@vty1     |interface Vlan3003 
+  461    46          admin@vty1     | no shutdown 
+  462    46          admin@vty1     | description vrf interface to External router
+ idx   sess           user@line      Logged command
+
+  463    46          admin@vty1     | exit 
+  464    46          admin@vty1     |router bgp 65001 
+  465    46          admin@vty1     | address-family ipv4 vrf Cappa
+  466    46          admin@vty1     |  redistribute lisp  metric 10
+  467    46          admin@vty1     |  router lisp 
+  468    46          admin@vty1     | instance-id 4097
+  469    46          admin@vty1     |  service ipv4 
+  470    46          admin@vty1     |   map-cache site-registration 
+  471    46          admin@vty1     |   exit 
+  472    46          admin@vty1     |    instance-id 4098
+  473    46          admin@vty1     |  service ipv4 
+  474    46          admin@vty1     |   map-cache site-registration 
+  475    46          admin@vty1     |   exit 
+  476    46          admin@vty1     |    instance-id 4099
+  477    46          admin@vty1     |  service ipv4 
+  478    46          admin@vty1     |   map-cache site-registration 
+  479    46          admin@vty1     |   exit 
+  480    46          admin@vty1     |    instance-id 4100
+  481    46          admin@vty1     |  service ipv4 
+  482    46          admin@vty1     |   map-cache site-registration 
+  483    46          admin@vty1     |   exit 
+  484    46          admin@vty1     |    instance-id 4101
+  485    46          admin@vty1     |  service ipv4 
+ idx   sess           user@line      Logged command
+
+  486    46          admin@vty1     |   eid-table vrf Cappa
+  487    46          admin@vty1     |   route-export site-registrations 
+  488    46          admin@vty1     |   route-import database bgp 65001  route-map database locator-set rloc_0f227a88-7560-4722-bcd9-3ab7a8f6ff71 
+  489    46          admin@vty1     |   distance site-registrations 250
+  490    46          admin@vty1     |   map-cache site-registration 
+  491    46          admin@vty1     |   exit 
+  492    46          admin@vty1     |    remote-rloc-probe on-route-change 
+  493    46          admin@vty1     |  site site_uci 
+  494    46          admin@vty1     |  eid-record instance-id 4101 0.0.0.0/0  accept-more-specifics 
+  495    46          admin@vty1     |  exit 
+  496    46          admin@vty1     |   exit 
+
+POD3-C9500-48X-A#     
+POD3-C9500-48X-A#
+POD3-C9500-48X-A#sh vrf
+  Name                             Default RD            Protocols   Interfaces
+  Alpha                            1:4099                ipv4        LI0.4099
+                                                                     Vl3003
+  Beta                             1:4100                ipv4        LI0.4100
+  Cappa                            1:4101                ipv4        LI0.4101
+  DEFAULT_VN                       1:4098                ipv4        Vl3001
+                                                                     LI0.4098
+  Mgmt-vrf                         <not set>             ipv4,ipv6   Gi0/0
+POD3-C9500-48X-A#sh ip int vr
+                            ^
+% Invalid input detected at '^' marker.
+
+POD3-C9500-48X-A#sh ip int br
+Interface              IP-Address      OK? Method Status                Protocol
+Vlan1                  unassigned      YES unset  administratively down down    
+Vlan192                192.168.1.4     YES manual up                    up      
+Vlan3001               10.128.3.1      YES manual up                    up      
+Vlan3002               10.128.3.5      YES manual up                    up      
+Vlan3003               10.128.3.9      YES manual up                    up      
+GigabitEthernet0/0     10.105.14.109   YES NVRAM  up                    up      
+Te1/0/1                unassigned      YES unset  down                  down    
+Te1/0/2                unassigned      YES unset  up                    up      
+Te1/0/3                10.128.2.65     YES manual up                    up      
+Te1/0/4                unassigned      YES unset  down                  down    
+Te1/0/5                unassigned      YES unset  down                  down    
+Te1/0/6                unassigned      YES unset  down                  down    
+Te1/0/7                unassigned      YES unset  down                  down    
+Te1/0/8                unassigned      YES unset  down                  down    
+Te1/0/9                unassigned      YES unset  down                  down    
+Te1/0/10               unassigned      YES unset  down                  down    
+Te1/0/11               unassigned      YES unset  down                  down    
+Te1/0/12               unassigned      YES unset  down                  down    
+Te1/0/13               unassigned      YES unset  down                  down    
+Te1/0/14               unassigned      YES unset  down                  down    
+Te1/0/15               unassigned      YES unset  down                  down    
+Te1/0/16               unassigned      YES unset  down                  down    
+Te1/0/17               unassigned      YES unset  down                  down    
+Te1/0/18               unassigned      YES unset  down                  down    
+Te1/0/19               unassigned      YES unset  down                  down    
+Te1/0/20               unassigned      YES unset  down                  down    
+Te1/0/21               unassigned      YES unset  down                  down    
+Te1/0/22               unassigned      YES unset  down                  down    
+Te1/0/23               unassigned      YES unset  down                  down    
+Te1/0/24               unassigned      YES unset  down                  down    
+Te1/0/25               unassigned      YES unset  down                  down    
+Te1/0/26               unassigned      YES unset  down                  down    
+Te1/0/27               unassigned      YES unset  down                  down    
+Te1/0/28               unassigned      YES unset  down                  down    
+Te1/0/29               unassigned      YES unset  down                  down    
+Te1/0/30               unassigned      YES unset  down                  down    
+Te1/0/31               unassigned      YES unset  down                  down    
+Te1/0/32               unassigned      YES unset  down                  down    
+Te1/0/33               unassigned      YES unset  down                  down    
+Te1/0/34               unassigned      YES unset  down                  down    
+Te1/0/35               unassigned      YES unset  down                  down    
+Te1/0/36               unassigned      YES unset  down                  down    
+Te1/0/37               unassigned      YES unset  up                    up      
+Te1/0/38               unassigned      YES unset  down                  down    
+Te1/0/39               unassigned      YES unset  down                  down    
+Te1/0/40               10.128.2.69     YES manual up                    up      
+Te1/1/1                unassigned      YES unset  down                  down    
+Te1/1/2                unassigned      YES unset  down                  down    
+Te1/1/3                unassigned      YES unset  down                  down    
+Te1/1/4                unassigned      YES unset  down                  down    
+Te1/1/5                unassigned      YES unset  down                  down    
+Te1/1/6                unassigned      YES unset  down                  down    
+Te1/1/7                unassigned      YES unset  down                  down    
+Te1/1/8                unassigned      YES unset  down                  down    
+Fo1/1/1                unassigned      YES unset  down                  down    
+Fo1/1/2                unassigned      YES unset  down                  down    
+LISP0                  unassigned      YES unset  up                    up      
+LISP0.4097             10.128.1.1      YES unset  up                    up      
+LISP0.4098             10.128.3.1      YES unset  up                    up      
+LISP0.4099             10.128.3.9      YES unset  up                    up      
+LISP0.4100             unassigned      NO  unset  up                    up      
+LISP0.4101             unassigned      NO  unset  up                    up      
+Loopback0              10.128.1.1      YES manual up                    up      
+POD3-C9500-48X-A#  sh run int vlan 3001
+Building configuration...
+
+Current configuration : 186 bytes
+!
+interface Vlan3001
+ description vrf interface to External router
+ vrf forwarding DEFAULT_VN
+ ip address 10.128.3.1 255.255.255.252
+ no ip redirects
+ ip route-cache same-interface
+end
+
+POD3-C9500-48X-A#  sh run int vlan 3002
+Building configuration...
+
+Current configuration : 159 bytes
+!
+interface Vlan3002
+ description vrf interface to External router
+ ip address 10.128.3.5 255.255.255.252
+ no ip redirects
+ ip route-cache same-interface
+end
+
+POD3-C9500-48X-A#  sh run int vlan 3003
+Building configuration...
+
+Current configuration : 181 bytes
+!
+interface Vlan3003
+ description vrf interface to External router
+ vrf forwarding Alpha
+ ip address 10.128.3.9 255.255.255.252
+ no ip redirects
+ ip route-cache same-interface
+end
+
+POD3-C9500-48X-A#  sh run int vlan 3003
+Building configuration...
+
+Current configuration : 181 bytes
+!
+interface Vlan3003
+ description vrf interface to External router
+ vrf forwarding Alpha
+ ip address 10.128.3.9 255.255.255.252
+ no ip redirects
+ ip route-cache same-interface
+end
+
+POD3-C9500-48X-A#sh vrf
+  Name                             Default RD            Protocols   Interfaces
+  Mgmt-vrf                         <not set>             ipv4,ipv6   Gi0/0
+POD3-C9500-48X-A#
+POD3-C9500-48X-A#
+POD3-C9500-48X-A#
+POD3-C9500-48X-A#sh ip int br
+Interface              IP-Address      OK? Method Status                Protocol
+Vlan1                  unassigned      YES unset  administratively down down    
+Vlan192                192.168.1.4     YES manual up                    up      
+GigabitEthernet0/0     10.105.14.109   YES NVRAM  up                    up      
+Te1/0/1                unassigned      YES unset  down                  down    
+Te1/0/2                unassigned      YES unset  up                    up      
+Te1/0/3                10.128.2.65     YES manual up                    up      
+Te1/0/4                unassigned      YES unset  down                  down    
+Te1/0/5                unassigned      YES unset  down                  down    
+Te1/0/6                unassigned      YES unset  down                  down    
+Te1/0/7                unassigned      YES unset  down                  down    
+Te1/0/8                unassigned      YES unset  down                  down    
+Te1/0/9                unassigned      YES unset  down                  down    
+Te1/0/10               unassigned      YES unset  down                  down    
+Te1/0/11               unassigned      YES unset  down                  down    
+Te1/0/12               unassigned      YES unset  down                  down    
+Te1/0/13               unassigned      YES unset  down                  down    
+Te1/0/14               unassigned      YES unset  down                  down    
+Te1/0/15               unassigned      YES unset  down                  down    
+Te1/0/16               unassigned      YES unset  down                  down    
+Te1/0/17               unassigned      YES unset  down                  down    
+Te1/0/18               unassigned      YES unset  down                  down    
+Te1/0/19               unassigned      YES unset  down                  down    
+Te1/0/20               unassigned      YES unset  down                  down    
+Te1/0/21               unassigned      YES unset  down                  down    
+Te1/0/22               unassigned      YES unset  down                  down    
+Te1/0/23               unassigned      YES unset  down                  down    
+Te1/0/24               unassigned      YES unset  down                  down    
+Te1/0/25               unassigned      YES unset  down                  down    
+Te1/0/26               unassigned      YES unset  down                  down    
+Te1/0/27               unassigned      YES unset  down                  down    
+Te1/0/28               unassigned      YES unset  down                  down    
+Te1/0/29               unassigned      YES unset  down                  down    
+Te1/0/30               unassigned      YES unset  down                  down    
+Te1/0/31               unassigned      YES unset  down                  down    
+Te1/0/32               unassigned      YES unset  down                  down    
+Te1/0/33               unassigned      YES unset  down                  down    
+Te1/0/34               unassigned      YES unset  down                  down    
+Te1/0/35               unassigned      YES unset  down                  down    
+Te1/0/36               unassigned      YES unset  down                  down    
+Te1/0/37               unassigned      YES unset  up                    up      
+Te1/0/38               unassigned      YES unset  down                  down    
+Te1/0/39               unassigned      YES unset  down                  down    
+Te1/0/40               10.128.2.69     YES manual up                    up      
+Te1/1/1                unassigned      YES unset  down                  down    
+Te1/1/2                unassigned      YES unset  down                  down    
+Te1/1/3                unassigned      YES unset  down                  down    
+Te1/1/4                unassigned      YES unset  down                  down    
+Te1/1/5                unassigned      YES unset  down                  down    
+Te1/1/6                unassigned      YES unset  down                  down    
+Te1/1/7                unassigned      YES unset  down                  down    
+Te1/1/8                unassigned      YES unset  down                  down    
+Fo1/1/1                unassigned      YES unset  down                  down    
+Fo1/1/2                unassigned      YES unset  down                  down    
+Loopback0              10.128.1.1      YES manual up                    up      
+POD3-C9500-48X-A#
+POD3-C9500-48X-A#
+POD3-C9500-48X-A#
+POD3-C9500-48X-A#
+POD3-C9500-48X-A#sh run int te1/0/2
+Building configuration...
+
+Current configuration : 41 bytes
+!
+interface TenGigabitEthernet1/0/2
+end
+
+POD3-C9500-48X-A#sh vrf
+  Name                             Default RD            Protocols   Interfaces
+  Alpha                            1:4099                ipv4        Vl3001
+                                                                     LI0.4099
+  Beta                             1:4100                ipv4        Vl3003
+                                                                     LI0.4100
+  Cappa                            1:4101                ipv4        Vl3004
+                                                                     LI0.4101
+  DEFAULT_VN                       1:4098                ipv4        Vl3005
+                                                                     LI0.4098
+  Mgmt-vrf                         <not set>             ipv4,ipv6   Gi0/0
+POD3-C9500-48X-A#
+POD3-C9500-48X-A#
+POD3-C9500-48X-A#sh ip int br
+Interface              IP-Address      OK? Method Status                Protocol
+Vlan1                  unassigned      YES unset  administratively down down    
+Vlan192                192.168.1.4     YES manual up                    up      
+Vlan3001               10.128.3.1      YES manual up                    down    
+Vlan3002               10.128.3.5      YES manual up                    down    
+Vlan3003               10.128.3.9      YES manual up                    down    
+Vlan3004               10.128.3.13     YES manual up                    down    
+Vlan3005               10.128.3.17     YES manual up                    down    
+GigabitEthernet0/0     10.105.14.109   YES NVRAM  up                    up      
+Te1/0/1                unassigned      YES unset  down                  down    
+Te1/0/2                unassigned      YES unset  up                    up      
+Te1/0/3                10.128.2.65     YES manual up                    up      
+Te1/0/4                unassigned      YES unset  down                  down    
+Te1/0/5                unassigned      YES unset  down                  down    
+Te1/0/6                unassigned      YES unset  down                  down    
+Te1/0/7                unassigned      YES unset  down                  down    
+Te1/0/8                unassigned      YES unset  down                  down    
+Te1/0/9                unassigned      YES unset  down                  down    
+Te1/0/10               unassigned      YES unset  down                  down    
+Te1/0/11               unassigned      YES unset  down                  down    
+Te1/0/12               unassigned      YES unset  down                  down    
+Te1/0/13               unassigned      YES unset  down                  down    
+Te1/0/14               unassigned      YES unset  down                  down    
+Te1/0/15               unassigned      YES unset  down                  down    
+Te1/0/16               unassigned      YES unset  down                  down    
+Te1/0/17               unassigned      YES unset  down                  down    
+Te1/0/18               unassigned      YES unset  down                  down    
+Te1/0/19               unassigned      YES unset  down                  down    
+Te1/0/20               unassigned      YES unset  down                  down    
+Te1/0/21               unassigned      YES unset  down                  down    
+Te1/0/22               unassigned      YES unset  down                  down    
+Te1/0/23               unassigned      YES unset  down                  down    
+Te1/0/24               unassigned      YES unset  down                  down    
+Te1/0/25               unassigned      YES unset  down                  down    
+Te1/0/26               unassigned      YES unset  down                  down    
+Te1/0/27               unassigned      YES unset  down                  down    
+Te1/0/28               unassigned      YES unset  down                  down    
+Te1/0/29               unassigned      YES unset  down                  down    
+Te1/0/30               unassigned      YES unset  down                  down    
+Te1/0/31               unassigned      YES unset  down                  down    
+Te1/0/32               unassigned      YES unset  down                  down    
+Te1/0/33               unassigned      YES unset  down                  down    
+Te1/0/34               unassigned      YES unset  down                  down    
+Te1/0/35               unassigned      YES unset  down                  down    
+Te1/0/36               unassigned      YES unset  down                  down    
+Te1/0/37               unassigned      YES unset  up                    up      
+Te1/0/38               unassigned      YES unset  down                  down    
+Te1/0/39               unassigned      YES unset  down                  down    
+Te1/0/40               10.128.2.69     YES manual up                    up      
+Te1/1/1                unassigned      YES unset  down                  down    
+Te1/1/2                unassigned      YES unset  down                  down    
+Te1/1/3                unassigned      YES unset  down                  down    
+Te1/1/4                unassigned      YES unset  down                  down    
+Te1/1/5                unassigned      YES unset  down                  down    
+Te1/1/6                unassigned      YES unset  down                  down    
+Te1/1/7                unassigned      YES unset  down                  down    
+Te1/1/8                unassigned      YES unset  down                  down    
+Fo1/1/1                unassigned      YES unset  down                  down    
+Fo1/1/2                unassigned      YES unset  down                  down    
+LISP0                  unassigned      YES unset  up                    up      
+LISP0.4097             10.128.1.1      YES unset  up                    up      
+LISP0.4098             unassigned      NO  unset  up                    up      
+LISP0.4099             unassigned      NO  unset  up                    up      
+LISP0.4100             unassigned      NO  unset  up                    up      
+LISP0.4101             unassigned      NO  unset  up                    up      
+Loopback0              10.128.1.1      YES manual up                    up      
+POD3-C9500-48X-A# 
+POD3-C9500-48X-A#
+POD3-C9500-48X-A#
+POD3-C9500-48X-A#
+POD3-C9500-48X-A#
+POD3-C9500-48X-A#sh ip int br
+Interface              IP-Address      OK? Method Status                Protocol
+Vlan1                  unassigned      YES unset  administratively down down    
+Vlan192                192.168.1.4     YES manual up                    up      
+Vlan3001               10.128.3.1      YES manual up                    down    
+Vlan3002               10.128.3.5      YES manual up                    down    
+Vlan3003               10.128.3.9      YES manual up                    down    
+Vlan3004               10.128.3.13     YES manual up                    down    
+Vlan3005               10.128.3.17     YES manual up                    down    
+GigabitEthernet0/0     10.105.14.109   YES NVRAM  up                    up      
+Te1/0/1                unassigned      YES unset  down                  down    
+Te1/0/2                unassigned      YES unset  up                    up      
+Te1/0/3                10.128.2.65     YES manual up                    up      
+Te1/0/4                unassigned      YES unset  down                  down    
+Te1/0/5                unassigned      YES unset  down                  down    
+Te1/0/6                unassigned      YES unset  down                  down    
+Te1/0/7                unassigned      YES unset  down                  down    
+Te1/0/8                unassigned      YES unset  down                  down    
+Te1/0/9                unassigned      YES unset  down                  down    
+Te1/0/10               unassigned      YES unset  down                  down    
+Te1/0/11               unassigned      YES unset  down                  down    
+Te1/0/12               unassigned      YES unset  down                  down    
+Te1/0/13               unassigned      YES unset  down                  down    
+Te1/0/14               unassigned      YES unset  down                  down    
+Te1/0/15               unassigned      YES unset  down                  down    
+Te1/0/16               unassigned      YES unset  down                  down    
+Te1/0/17               unassigned      YES unset  down                  down    
+Te1/0/18               unassigned      YES unset  down                  down    
+Te1/0/19               unassigned      YES unset  down                  down    
+Te1/0/20               unassigned      YES unset  down                  down    
+Te1/0/21               unassigned      YES unset  down                  down    
+Te1/0/22               unassigned      YES unset  down                  down    
+Te1/0/23               unassigned      YES unset  down                  down    
+Te1/0/24               unassigned      YES unset  down                  down    
+Te1/0/25               unassigned      YES unset  down                  down    
+Te1/0/26               unassigned      YES unset  down                  down    
+Te1/0/27               unassigned      YES unset  down                  down    
+Te1/0/28               unassigned      YES unset  down                  down    
+Te1/0/29               unassigned      YES unset  down                  down    
+Te1/0/30               unassigned      YES unset  down                  down    
+Te1/0/31               unassigned      YES unset  down                  down    
+Te1/0/32               unassigned      YES unset  down                  down    
+Te1/0/33               unassigned      YES unset  down                  down    
+Te1/0/34               unassigned      YES unset  down                  down    
+Te1/0/35               unassigned      YES unset  down                  down    
+Te1/0/36               unassigned      YES unset  down                  down    
+Te1/0/37               unassigned      YES unset  up                    up      
+Te1/0/38               unassigned      YES unset  down                  down    
+Te1/0/39               unassigned      YES unset  down                  down    
+Te1/0/40               10.128.2.69     YES manual up                    up      
+Te1/1/1                unassigned      YES unset  down                  down    
+Te1/1/2                unassigned      YES unset  down                  down    
+Te1/1/3                unassigned      YES unset  down                  down    
+Te1/1/4                unassigned      YES unset  down                  down    
+Te1/1/5                unassigned      YES unset  down                  down    
+Te1/1/6                unassigned      YES unset  down                  down    
+Te1/1/7                unassigned      YES unset  down                  down    
+Te1/1/8                unassigned      YES unset  down                  down    
+Fo1/1/1                unassigned      YES unset  down                  down    
+Fo1/1/2                unassigned      YES unset  down                  down    
+LISP0                  unassigned      YES unset  up                    up      
+LISP0.4097             10.128.1.1      YES unset  up                    up      
+LISP0.4098             unassigned      NO  unset  up                    up      
+LISP0.4099             unassigned      NO  unset  up                    up      
+LISP0.4100             unassigned      NO  unset  up                    up      
+LISP0.4101             unassigned      NO  unset  up                    up      
+Loopback0              10.128.1.1      YES manual up                    up      
+POD3-C9500-48X-A# 
+POD3-C9500-48X-A#
+POD3-C9500-48X-A#
+POD3-C9500-48X-A#sh int te1/0/2
+TenGigabitEthernet1/0/2 is up, line protocol is up (connected) 
+  Hardware is Ten Gigabit Ethernet, address is 00a3.d15a.d002 (bia 00a3.d15a.d002)
+  MTU 1500 bytes, BW 100000 Kbit/sec, DLY 100 usec, 
+     reliability 255/255, txload 1/255, rxload 1/255
+  Encapsulation ARPA, loopback not set
+  Keepalive not set
+  Full-duplex, 100Mb/s, link type is auto, media type is 10/100/1000BaseTX SFP
+  input flow-control is on, output flow-control is unsupported 
+  ARP type: ARPA, ARP Timeout 04:00:00
+  Last input never, output 00:00:00, output hang never
+  Last clearing of "show interface" counters never
+  Input queue: 0/2000/0/0 (size/max/drops/flushes); Total output drops: 0
+  Queueing strategy: fifo
+  Output queue: 0/40 (size/max)
+  5 minute input rate 14000 bits/sec, 14 packets/sec
+  5 minute output rate 24000 bits/sec, 28 packets/sec
+     49773 packets input, 7600346 bytes, 0 no buffer
+     Received 5628 broadcasts (3543 multicasts)
+     0 runts, 0 giants, 0 throttles 
+     82 input errors, 73 CRC, 0 frame, 0 overrun, 0 ignored
+     0 watchdog, 3543 multicast, 0 pause input
+     0 input packets with dribble condition detected
+     91678 packets output, 14338069 bytes, 0 underruns
+     0 output errors, 0 collisions, 2 interface resets
+     33 unknown protocol drops
+     0 babbles, 0 late collision, 0 deferred
+     0 lost carrier, 0 no carrier, 0 pause output
+     0 output buffer failures, 0 output buffers swapped out
+POD3-C9500-48X-A# 
+POD3-C9500-48X-A#
+POD3-C9500-48X-A#
+POD3-C9500-48X-A#sh run int te1/0/2
+Building configuration...
+
+Current configuration : 64 bytes
+!
+interface TenGigabitEthernet1/0/2
+ switchport mode trunk
+end
+
+POD3-C9500-48X-A#sh int trunk
+
+Port        Mode             Encapsulation  Status        Native vlan
+Te1/0/2     on               802.1q         trunking      1
+
+Port        Vlans allowed on trunk
+Te1/0/2     1-4094
+
+Port        Vlans allowed and active in management domain
+Te1/0/2     1,101,192,3001-3005
+
+Port        Vlans in spanning tree forwarding state and not pruned
+Te1/0/2     1,101,192,3001-3005
+POD3-C9500-48X-A#sh ip int br
+Interface              IP-Address      OK? Method Status                Protocol
+Vlan1                  unassigned      YES unset  administratively down down    
+Vlan192                192.168.1.4     YES manual up                    up      
+Vlan3001               10.128.3.1      YES manual up                    up      
+Vlan3002               10.128.3.5      YES manual up                    up      
+Vlan3003               10.128.3.9      YES manual up                    up      
+Vlan3004               10.128.3.13     YES manual up                    up      
+Vlan3005               10.128.3.17     YES manual up                    up      
+GigabitEthernet0/0     10.105.14.109   YES NVRAM  up                    up      
+Te1/0/1                unassigned      YES unset  down                  down    
+Te1/0/2                unassigned      YES unset  up                    up      
+Te1/0/3                10.128.2.65     YES manual up                    up      
+Te1/0/4                unassigned      YES unset  down                  down    
+Te1/0/5                unassigned      YES unset  down                  down    
+Te1/0/6                unassigned      YES unset  down                  down    
+Te1/0/7                unassigned      YES unset  down                  down    
+Te1/0/8                unassigned      YES unset  down                  down    
+Te1/0/9                unassigned      YES unset  down                  down    
+Te1/0/10               unassigned      YES unset  down                  down    
+Te1/0/11               unassigned      YES unset  down                  down    
+Te1/0/12               unassigned      YES unset  down                  down    
+Te1/0/13               unassigned      YES unset  down                  down    
+Te1/0/14               unassigned      YES unset  down                  down    
+Te1/0/15               unassigned      YES unset  down                  down    
+Te1/0/16               unassigned      YES unset  down                  down    
+Te1/0/17               unassigned      YES unset  down                  down    
+Te1/0/18               unassigned      YES unset  down                  down    
+Te1/0/19               unassigned      YES unset  down                  down    
+Te1/0/20               unassigned      YES unset  down                  down    
+Te1/0/21               unassigned      YES unset  down                  down    
+Te1/0/22               unassigned      YES unset  down                  down    
+Te1/0/23               unassigned      YES unset  down                  down    
+Te1/0/24               unassigned      YES unset  down                  down    
+Te1/0/25               unassigned      YES unset  down                  down    
+Te1/0/26               unassigned      YES unset  down                  down    
+Te1/0/27               unassigned      YES unset  down                  down    
+Te1/0/28               unassigned      YES unset  down                  down    
+Te1/0/29               unassigned      YES unset  down                  down    
+Te1/0/30               unassigned      YES unset  down                  down    
+Te1/0/31               unassigned      YES unset  down                  down    
+Te1/0/32               unassigned      YES unset  down                  down    
+Te1/0/33               unassigned      YES unset  down                  down    
+Te1/0/34               unassigned      YES unset  down                  down    
+Te1/0/35               unassigned      YES unset  down                  down    
+Te1/0/36               unassigned      YES unset  down                  down    
+Te1/0/37               unassigned      YES unset  up                    up      
+Te1/0/38               unassigned      YES unset  down                  down    
+Te1/0/39               unassigned      YES unset  down                  down    
+Te1/0/40               10.128.2.69     YES manual up                    up      
+Te1/1/1                unassigned      YES unset  down                  down    
+Te1/1/2                unassigned      YES unset  down                  down    
+Te1/1/3                unassigned      YES unset  down                  down    
+Te1/1/4                unassigned      YES unset  down                  down    
+Te1/1/5                unassigned      YES unset  down                  down    
+Te1/1/6                unassigned      YES unset  down                  down    
+Te1/1/7                unassigned      YES unset  down                  down    
+Te1/1/8                unassigned      YES unset  down                  down    
+Fo1/1/1                unassigned      YES unset  down                  down    
+Fo1/1/2                unassigned      YES unset  down                  down    
+LISP0                  unassigned      YES unset  up                    up      
+LISP0.4097             10.128.1.1      YES unset  up                    up      
+LISP0.4098             10.128.3.17     YES unset  up                    up      
+LISP0.4099             10.128.3.1      YES unset  up                    up      
+LISP0.4100             10.128.3.9      YES unset  up                    up      
+LISP0.4101             10.128.3.13     YES unset  up                    up      
+Loopback0              10.128.1.1      YES manual up                    up      
+POD3-C9500-48X-A# 
+POD3-C9500-48X-A#
+POD3-C9500-48X-A#  
+POD3-C9500-48X-A#
+POD3-C9500-48X-A#
